@@ -28,7 +28,7 @@ if __name__ == "__main__":
     numProcRunning = pgrep.split('\n')
 
     if len(numProcRunning) > 1:
-        print('Slimbook INTEL it is in execution')
+        print('Slimbook Intel it is in execution')
     else:
         
         try:
