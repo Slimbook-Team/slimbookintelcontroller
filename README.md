@@ -1,1 +1,12 @@
-# slimbookintelcontroller
+# Slimbook Intel Controllerç
+
+Slimbook Intel Controller works by setting your CPU TDP value. That is, the amount of power measured in watts that you CPU is allowed to draw to save battery or to improve the overall performance under heavy workloads like rendering jobs or serious number crunching on large spreadsheets. Increasing the TDP allows the CPU to use its boost frequency more often or even permanently on some scenarios.
+
+Use this software with caution as the heat output will increase dramatically on the higher performance settings, we can't guarantee that all INTEL CPU's will behave the same way, so your mileage may vary.
+
+Slimbook Intel Controller is designed with mobile intel pocessors in mind. 
+
+![image](https://user-images.githubusercontent.com/18195266/124899040-02f1c700-dfe0-11eb-9c46-9e33484d44d8.png)
+
+
+![image](https://user-images.githubusercontent.com/18195266/124899253-39c7dd00-dfe0-11eb-9ea1-afc14d5ac9a7.png)
