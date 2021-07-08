@@ -1,0 +1,32 @@
+#!/bin/bash
+exec 2>> /tmp/slimbookintelcontroller_err.txt
+exec >> /tmp/slimbookintelcontroller_err.txt
+date >&2
+printf "$0 argument: %s\n" "$@" >&2
+
+cmd="slimbookintelcontroller-pkexec"
+
+cmd1="pgrep -f slimbookintelcontrollerindicator"
+
+
+
+case $1 in
+    pre)   ;;
+    post)  
+      
+      if $cmd1; 
+      then
+	
+	echo "The program program exists"
+	sleep 15
+	echo "Apliying changes"
+	if $cmd ; then
+		echo "Done!"
+	fi
+      elif ls /home; then
+
+	echo "The program doesn’t exist"
+
+      fi
+      ;;
+esac

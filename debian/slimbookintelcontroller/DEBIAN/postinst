@@ -1,0 +1,17 @@
+#!/bin/sh
+# postinst script for slimbookamdcontrolleralpha
+#
+# see: dh_installdeb(1)
+
+set -x
+
+#clono
+cd /usr/share/slimbookintelcontroller/
+git clone https://github.com/kitsunyan/intel-undervolt.git
+
+cd intel-undervolt/
+./configure && make && make install
+
+chmod +x /usr/lib/systemd/system-sleep/slimbookintelcontroller
+
+exit 0

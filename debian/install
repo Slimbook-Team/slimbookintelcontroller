@@ -1,0 +1,8 @@
+src /usr/share/slimbookintelcontroller
+post-suspension/* /usr/lib/systemd/system-sleep/
+policykit/* /usr/share/polkit-1/actions/
+slimbookintelcontroller /usr/share/slimbookintelcontroller
+slimbookintelcontroller.desktop /usr/share/slimbookintelcontroller
+slimbookintelcontroller /usr/bin
+bin/* /usr/bin
+slimbookintelcontroller.desktop /usr/share/applications
