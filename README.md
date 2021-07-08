@@ -10,20 +10,21 @@ Slimbook Intel Controller is designed with mobile intel pocessors in mind.
 ![image](https://user-images.githubusercontent.com/18195266/124899040-02f1c700-dfe0-11eb-9c46-9e33484d44d8.png)
 
 
-
-![image](https://user-images.githubusercontent.com/18195266/124899253-39c7dd00-dfe0-11eb-9ea1-afc14d5ac9a7.png)
-
 # Install
 ```bat
    sudo add-apt-repository ppa:slimbook/slimbook
-   sudo apt install slimbookface
+   sudo apt install slimbookintelcontroller
 ```
+
+
+![image](https://user-images.githubusercontent.com/18195266/124899253-39c7dd00-dfe0-11eb-9ea1-afc14d5ac9a7.png)
+
 
 
 
 Here you have link to the app tutorial!
 
-https://slimbook.es/en/tutoriales/aplicaciones-slimbook/400-slimbook-face-biometric-recognition-and-dont-enter-more-passwords
+https://slimbook.es/en/tutoriales/aplicaciones-slimbook/514-en-slimbook-intel-controller
 --
 
 This software is protected with the GPLv3 license, which allows you to modify it with the same license and authorship. 
