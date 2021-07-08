@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=Slimbook INTEL Controller
+Name=Slimbook Intel Controller
 Version=0.0.1
 Exec=slimbookintelcontroller
 Comment=Modify your CPU power!
@@ -9,4 +9,4 @@ Terminal=false
 StartupNotify=true
 Encoding=UTF-8
 Categories=Utility;
-Name[es_ES]=Slimbook INTEL Controller
+Name[es_ES]=Slimbook Intel Controller

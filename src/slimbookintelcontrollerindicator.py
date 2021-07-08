@@ -84,7 +84,7 @@ class Indicator():
 
 	def __init__(self):
 		self.app = 'show_proc'
-		iconpath = currpath+'/amd.png'
+		iconpath = currpath+'/images/intel-green.png'
 		# after you defined the initial indicator, you can alter the icon!
 		self.testindicator = AppIndicator3.Indicator.new(
 			self.app, iconpath, AppIndicator3.IndicatorCategory.OTHER)
