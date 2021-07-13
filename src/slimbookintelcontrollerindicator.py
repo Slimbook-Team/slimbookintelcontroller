@@ -51,11 +51,11 @@ print(config_file)
 
 iconapp = currpath+'/amd.png'
 
-low_img = currpath+'/images/amd-1.png'
+low_img = currpath+'/images/intel-green.png'
 
-medium_img = currpath+'/images/logo-blue.png'
+medium_img = currpath+'/images/intel-green.png'
 
-high_img = currpath+'/images/amd-3.png'
+high_img = currpath+'/images/intel-green.png'
 
 entorno_usu = locale.getlocale()[0]
 
@@ -207,7 +207,7 @@ class Indicator():
 		print('Updating '+self.modo_actual+' to : '+self.parameters[0].split('@')[0]+' '+self.parameters[1].split('@')[1]+'\n')
             
 		self.update_config_file("mode", self.modo_actual)
-		os.system('pkexec slimbookintelcontroller-pkexec')
+		os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
 
 	#Funcion para configuracion de medio rendimiento
 	def mediorendimiento(self, widget):
@@ -217,7 +217,7 @@ class Indicator():
 		print('Updating '+self.modo_actual+' to : '+self.parameters[1].split('@')[0]+' '+self.parameters[1].split('@')[1]+'.\n')
 		
 		self.update_config_file("mode", self.modo_actual)
-		os.system('pkexec slimbookintelcontroller-pkexec')
+		os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
 
 	#Funcion para configuracion de alto rendimiento
 	def altorendimiento(self, widget):
@@ -227,7 +227,7 @@ class Indicator():
 		print('Updating '+self.modo_actual+' to : '+self.parameters[2].split('@')[0]+' '+self.parameters[2].split('@')[1]+'.\n')
 
 		self.update_config_file("mode", self.modo_actual)
-		os.system('pkexec slimbookintelcontroller-pkexec')
+		os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
 
 	
 

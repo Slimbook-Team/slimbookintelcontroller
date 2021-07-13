@@ -31,7 +31,6 @@ except:
     idiomas = ['en_EN'] 
 
 
-
 print('Language: ', idiomas)
 t = gettext.translation('slimbookintelcontrollerinfo',
 						currpath+'/locale',

@@ -5,6 +5,7 @@
 import os
 import sys
 import subprocess
+import shutil
 from configparser import ConfigParser
 
 print('SlimbookIntelController-Applyconfig, executed as: '+str(subprocess.getoutput('whoami')))
@@ -20,6 +21,12 @@ print("Username: "+USER_NAME)
 
 HOMEDIR = subprocess.getoutput("echo ~"+USER_NAME)
 print("Homedir: "+HOMEDIR+"\n")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
+print(LAUNCHER_DESKTOP)
+
+AUTOSTART_DESKTOP = os.path.expanduser("/home/"+USER_NAME+"/.config/autostart/slimbookintelcontroller-autostart.desktop")
+print(AUTOSTART_DESKTOP)
 
 config_file = HOMEDIR+'/.config/slimbookintelcontroller/slimbookintelcontroller.conf'
 
@@ -54,6 +61,19 @@ def main(args): # Args will be like --> command_name value
             call = subprocess.getstatusoutput("sudo intel-undervolt apply")
             print("Exit: "+str(call[0])) #To do after suspension
             
+        elif args[1] == "autostart":
+            if args[2] == "enable":
+                if not os.path.isfile(AUTOSTART_DESKTOP):
+                    shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)
+                    os.system('sudo chmod 755 '+AUTOSTART_DESKTOP)
+                    print("File -autostart has been copied!.")
+
+            elif args[2] == "disable":
+                if os.path.isfile(AUTOSTART_DESKTOP):
+                    os.remove(AUTOSTART_DESKTOP)                
+                    print("File -autostart has been deleted.")
+            
+
         elif args[1] == "secureboot_state":
             #print(args[1])
             print()

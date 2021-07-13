@@ -1,0 +1,1 @@
+ACTION=="change", SUBSYSTEM=="power_supply", RUN+="/usr/bin/slimbookintelcontroller-pkexec"

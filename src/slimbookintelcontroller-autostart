@@ -1,0 +1,2 @@
+#!/usr/bin/bash
+python3 /usr/share/slimbookintelcontroller/src/slimbookintelcontrollerindicator.py

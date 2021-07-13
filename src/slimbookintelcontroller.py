@@ -14,6 +14,8 @@ import re #Busca patrones expresiones regulares
 
 from pathlib import Path
 
+from applyconfig import USER_NAME
+
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -36,7 +38,9 @@ processors_file = currpath+'/processors/available'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
-AUTOSTART_DESKTOP = os.path.expanduser("~/.config/autostart/slimbookintelcontroller-autostart.desktop")
+print(LAUNCHER_DESKTOP)
+AUTOSTART_DESKTOP = os.path.expanduser("/home/"+USER_NAME+"/.config/autostart/slimbookintelcontroller-autostart.desktop")
+print(AUTOSTART_DESKTOP)
 
 # IDIOMAS ----------------------------------------------------------------
 
@@ -49,8 +53,7 @@ try:
     else: 
         idiomas = ['en_EN'] 
 except:
-    idiomas = ['en_EN'] 
-
+    idiomas = ['en_EN']  
 
 print('Language: ', entorno_usu)
 t = gettext.translation('slimbookintelcontroller',
@@ -363,21 +366,17 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     #Copies autostart file in directory
     def _inicio_automatico(self, switch, state):
 
-        if not os.path.exists (user+'/.config/autostart'):
-            os.system('mkdir ~/.config/autostart')    
+        if not os.path.exists ('/etc/init.d/'):
+            os.system('mkdir /etc/init.d/')    
             print('Dir autostart created.')
 
         if switch.get_active() is True:
-            print("\nAutostart Enabled")           
-            if not os.path.isfile(AUTOSTART_DESKTOP):
-                shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)
-                print("File -autostart has been copied!.")
+            os.system('pkexec slimbookintelcontroller-pkexec autostart enable')
             self.autostart_actual = 'on'
+
         else:
             print("\nAutostart Disabled")
-            if os.path.isfile(AUTOSTART_DESKTOP):
-                os.remove(AUTOSTART_DESKTOP)                
-                print("File -autostart has been deleted.")
+            os.system('pkexec slimbookintelcontroller-pkexec autostart disable')
             self.autostart_actual = 'off'
 
         print('Autostart now: '+ self.autostart_actual+'')
