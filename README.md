@@ -7,7 +7,7 @@ Use this software with caution as the heat output will increase dramatically on 
 Slimbook Intel Controller is designed with mobile intel pocessors in mind. 
 If you want to try the software in any other CPU, you can add it to the configuration file  /home/*(username)*/.config/slimboookintelcontroller/slimbookintelcontroller.conf
 
-NOTE: This application works with secureboot disabled.
+NOTE: Secureboot enabled does not allow kernel to manage CPU parameters.
 
 
 ![image](https://user-images.githubusercontent.com/18195266/124899040-02f1c700-dfe0-11eb-9c46-9e33484d44d8.png)
