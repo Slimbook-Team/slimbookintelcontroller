@@ -5,6 +5,7 @@ Slimbook Intel Controller works by setting your CPU TDP value. That is, the amou
 Use this software with caution as the heat output will increase dramatically on the higher performance settings, we can't guarantee that all INTEL CPU's will behave the same way, so your mileage may vary.
 
 Slimbook Intel Controller is designed with mobile intel pocessors in mind. 
+If you want to try the software in any other CPU, you can add it to the configuration file  /home/*(username)*/.config/slimboookintelcontroller/slimbookintelcontroller.conf
 
 
 ![image](https://user-images.githubusercontent.com/18195266/124899040-02f1c700-dfe0-11eb-9c46-9e33484d44d8.png)
