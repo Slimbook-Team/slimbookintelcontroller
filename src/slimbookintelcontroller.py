@@ -366,10 +366,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     #Copies autostart file in directory
     def _inicio_automatico(self, switch, state):
 
-        if not os.path.exists ('/etc/init.d/'):
-            os.system('mkdir /etc/init.d/')    
-            print('Dir autostart created.')
-
+        
         if switch.get_active() is True:
             os.system('pkexec slimbookintelcontroller-pkexec autostart enable')
             self.autostart_actual = 'on'
@@ -396,7 +393,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         print()
 
     def init_gui(self, switch1, switch2): # ---> UNFINISHED
-
+        config.read(config_file)
         #Inicio automatico :):
         if config.get('CONFIGURATION', 'autostart') == 'on':
             #autostart

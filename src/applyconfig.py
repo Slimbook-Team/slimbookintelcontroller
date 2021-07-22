@@ -62,6 +62,10 @@ def main(args): # Args will be like --> command_name value
             print("Exit: "+str(call[0])) #To do after suspension
             
         elif args[1] == "autostart":
+            if not os.path.exists ('/home/'+USER_NAME+'/.config/autostart/'):
+                os.system('mkdir /home/'+USER_NAME+'/.config/autostart/')    
+                print('Dir autostart created.')
+
             if args[2] == "enable":
                 if not os.path.isfile(AUTOSTART_DESKTOP):
                     shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)

@@ -8,4 +8,4 @@ Name[es_ES]=slimbookintelcontroller-autostart.desktop
 Name=Slimbook Intel Controller Autostart
 Comment[es_ES]=Arranque de autoinicio de Slimbook Intel Controller
 Comment=Slimbook Intel Controller's autostart executable
-X-GNOME-Autostart-Delay=15
+X-GNOME-Autostart-Delay=23
