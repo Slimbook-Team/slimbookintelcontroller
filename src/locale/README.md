@@ -5,6 +5,7 @@
 2. Move the files '*.template.po' (which are outside the language folders) to your folder.
 3. Edit those files with your translations.
 4. Upload the new folder to this repository route.
+
 Tip: You can use the existent folders as a guide to translate *.po files in your folder.
 
 # How to edit an existent translation?
