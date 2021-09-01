@@ -29,8 +29,7 @@ Here you have link to the app tutorial! --> [App tutorial](https://slimbook.es/e
 --
 
 # Colaborate
-Help us coding, suggest ideas, everyone is welcome! --> <span style="font-size:larger;">[To do list](https://github.com/slimbook/slimbookintelcontroller/projects/2)</span>
-
+Help us coding, suggest ideas, everyone is welcome! -- **[To do list](https://github.com/slimbook/slimbookintelcontroller/projects/2)**
 
 
 This software is protected with the GPLv3 license, which allows you to modify it with the same license and authorship. 
