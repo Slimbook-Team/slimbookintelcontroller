@@ -32,7 +32,8 @@ https://slimbook.es/en/tutoriales/aplicaciones-slimbook/514-en-slimbook-intel-co
 
 # Colaborate
 Help us coding, suggest ideas, everyone is welcome!
-[To do list](https://github.com/slimbook/slimbookintelcontroller/projects/2)
+
+# [To do list](https://github.com/slimbook/slimbookintelcontroller/projects/2)
 
 
 
