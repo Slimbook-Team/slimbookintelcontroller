@@ -32,7 +32,7 @@ https://slimbook.es/en/tutoriales/aplicaciones-slimbook/514-en-slimbook-intel-co
 
 # Colaborate
 This is our to do list!
-https://github.com/slimbook/slimbookamdcontroller/projects/1
+https://github.com/slimbook/slimbookintelcontroller/projects/2
 
 
 This software is protected with the GPLv3 license, which allows you to modify it with the same license and authorship. 
