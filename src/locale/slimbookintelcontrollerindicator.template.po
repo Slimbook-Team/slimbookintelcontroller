@@ -1,0 +1,37 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2021-09-01 09:24+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: slimbookintelcontrollerindicator.py:119
+msgid "Low performance"
+msgstr ""
+
+#: slimbookintelcontrollerindicator.py:123
+msgid "Medium performance"
+msgstr ""
+
+#: slimbookintelcontrollerindicator.py:128
+msgid "High performance"
+msgstr ""
+
+#: slimbookintelcontrollerindicator.py:132
+msgid "Preferences"
+msgstr ""
+
+#: slimbookintelcontrollerindicator.py:137
+msgid "Exit"
+msgstr ""
+

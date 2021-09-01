@@ -1,0 +1,79 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2021-09-01 09:26+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: slimbookintelcontrollerinfo.py:100
+msgid ""
+"The Slimbook Intel Controller app is capable of setting several TDP power levels for your Intel mobile processor. Switching between the different performance presets will give you the ability to control both performance and battery life with a single click. Bear in mind that the higher you set your performance level, your processor will also run hotter and drain your battery faster, so keep that in mind! \n"
+"\n"
+"Slimbook Intel Controller uses the third party software intel-undervolt from kitsunyan."
+msgstr ""
+"La aplicación Slimbook Intel Controller es capaz de establecer diferentes modos de TDP para tu procesador portátil Intel. Seccionar los diferentes ajustes preestablecidos de rendimiento le dará la capacidad de controlar tanto el rendimiento como la duración de la batería con un solo click. Cuanto más alto sea el nivel de rendimiento, su procesador se calentará más y agotará su batería más rápido, ¡Así que tenlo en cuenta! \n"
+"\n"
+"Slimbook Intel Controller utiliza el sofware Intel-Undervolt de kitsunyan."
+
+#: slimbookintelcontrollerinfo.py:106
+msgid " or buying a brand new Slimbook."
+msgstr " o comprando un Slimbook."
+
+#: slimbookintelcontrollerinfo.py:106
+msgid "If you want to support the Slimbook team with the development of this app and several more to come, you can do so by joining our "
+msgstr "Si quieres ayudar al equipo de Slimbook con el desarrollo de esta y otras apps, puedes hacerlo uniéndote a nuestro "
+
+#: slimbookintelcontrollerinfo.py:112
+msgid "Many laptops limit the power of the CPU, when working without the charger connected. Therefore, if you want to take advantage of the high-performance mode of this application, you may need to connect the charger."
+msgstr "Muchos portátiles limitan la energía de la CPU, cuando trabajan sin el cargador conectado. Así pues, si quieres aprovechar el modo de alto rendimiento de la aplicación, puede que necesites conectar el cargador."
+
+#: slimbookintelcontrollerinfo.py:112
+msgid "Note: "
+msgstr "Nota: "
+
+#: slimbookintelcontrollerinfo.py:120
+msgid "This software is provided * as is * without warranty of any kind.."
+msgstr "Este software se proporciona *tal cual*, sin grantía de ningún tipo."
+
+#: slimbookintelcontrollerinfo.py:124
+msgid "You are free from:"
+msgstr "Eres libre de:"
+
+#: slimbookintelcontrollerinfo.py:128
+msgid "Share: "
+msgstr "Compartir: "
+
+#: slimbookintelcontrollerinfo.py:128
+msgid ""
+"copy and redistribute the material in any medium or format\n"
+"Slimbook Copyright - License Creative Commons BY-NC-ND"
+msgstr ""
+"copiar y resdistribuir el material en cualquier medio o formato\n"
+"Slimbook Copyright - License Creative Commons BY-NC-ND"
+
+#: slimbookintelcontrollerinfo.py:212
+msgid "Visit @Slimbook web"
+msgstr "Visita la web de @Slimbook"
+
+#: slimbookintelcontrollerinfo.py:223
+msgid "@SlimbookIntelController Tutorial"
+msgstr "Tutorial @SlimbookIntelController"
+
+#: slimbookintelcontrollerinfo.py:228
+msgid "Send an e-mail to: "
+msgstr "Envia un e-mail a: "
+
+#: slimbookintelcontrollerinfo.py:268
+msgid "'The email has been copied to the clipboard'"
+msgstr "El email se ha copiado al portapapeles"
+
