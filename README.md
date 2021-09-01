@@ -33,8 +33,8 @@ Here you have link to the app tutorial!
 # Colaborate
 Help us coding, suggest ideas, everyone is welcome!
 
-# [To do list](https://github.com/slimbook/slimbookintelcontroller/projects/2)
-
+[To do list](https://github.com/slimbook/slimbookintelcontroller/projects/2)
+--
 
 
 This software is protected with the GPLv3 license, which allows you to modify it with the same license and authorship. 
