@@ -1,8 +1,8 @@
 # Translations.
 
 # How to create a new translation?
-1. Create the new language folder with the correct language nomenclature.
-2. Move the files '*.template.po' (which are outside the language folders) to your folder.
+1. Create the new language folder with the correct language nomenclature, then create a new folder inside and name it LC_MESSAGES.
+2. Move the files '*.template.po' (which are outside the language folders) to the folder named LC_MESSAGES in your folder.
 3. Edit those files with your translations.
 4. Upload the new folder to this repository route.
 
