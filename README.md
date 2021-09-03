@@ -28,7 +28,7 @@ NOTE: Secureboot enabled does not allow kernel to manage CPU parameters.
 Here you have link to the app tutorial! --> [App tutorial](https://slimbook.es/en/tutoriales/aplicaciones-slimbook/514-en-slimbook-intel-controller)
 --
 
-# Colaborate
+# Collaborate
 Help us coding, suggest ideas, everyone is welcome! -- **[To do list](https://github.com/slimbook/slimbookintelcontroller/projects/2)**
 
 
