@@ -1,3 +1,22 @@
+slimbookintelcontroller (0.2beta) focal; urgency=low
+
+  * Added configuration check
+  * Added 'CPU not supported' Dialog
+  * Added CPU Temperature
+
+ -- slimbook <dev@slimbook.es>  Tue, 27 Sep 2021 13:08:02 +0200
+
+slimbookintelcontroller (0.1beta) focal; urgency=low
+
+  * Added version label
+  * Added window movement
+  * Fixed getting username
+  * Improved ac plug/unplug
+  * Added tranlations
+  * Better info page
+
+ -- slimbook <dev@slimbook.es>  Tue, 1 Sep 2021 13:08:02 +0200
+ 
 slimbookintelcontroller (0.0.3) focal; urgency=low
 
   * Autostart timing adjustments.
