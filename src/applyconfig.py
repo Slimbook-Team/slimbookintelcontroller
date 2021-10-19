@@ -6,20 +6,23 @@ import os
 import sys
 import subprocess
 import shutil
+from time import sleep
 from configparser import ConfigParser
 
 print('SlimbookIntelController-Applyconfig, executed as: '+str(subprocess.getoutput('whoami')))
 
 print(subprocess.getoutput("echo $USERNAME"))
 
-if subprocess.getstatusoutput("logname")[0]==0:
-    USER_NAME = subprocess.getoutput("logname")
+USERNAME = subprocess.getstatusoutput("logname")
+
+# 1. Try getting logged username  2. This user is not root  3. Check user exists (no 'reboot' user exists) 
+if USERNAME[0] == 0 and USERNAME[1] != 'root' and subprocess.getstatusoutput('getent passwd '+USERNAME[1]) == 0:
+    USER_NAME = USERNAME[1]
 else:
     USER_NAME = subprocess.getoutput('last -wn1 | head -n 1 | cut -f 1 -d " "')
 
-print("Username: "+USER_NAME)
-
 HOMEDIR = subprocess.getoutput("echo ~"+USER_NAME)
+
 print("Homedir: "+HOMEDIR+"\n")
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
@@ -49,11 +52,10 @@ def main(args): # Args will be like --> command_name value
     if len(args) > 1:
         print("Using "+args[1]+" ...")
 
-        if args[1] == "pre":
+        if args[1] == "plug":
             print(args[1])
-
-            #call = subprocess.getstatusoutput("")
-            #print("Exit: "+str(call[0])) #To do before suspension
+            sleep(1)
+            apply_all()
         
         elif args[1] == "post":
             print(args[1])
@@ -91,57 +93,59 @@ def main(args): # Args will be like --> command_name value
             
 
     else: #--> Apply all
+        apply_all()
 
-        os.system("cat "+config_file)
+def apply_all():  
+    os.system("cat "+config_file)
 
-        cpu = config.get('CONFIGURATION', 'cpu')
+    cpu = config.get('CONFIGURATION', 'cpu')
 
-        apply_params =''
+    apply_params =''
 
-        mode = config.get('CONFIGURATION', 'mode')
+    mode = config.get('CONFIGURATION', 'mode')
 
-        if mode == 'low':
-            params = config.get('PROCESSORS', cpu).split('/')
-            apply_params = params[0].split("@")
+    if mode == 'low':
+        params = config.get('PROCESSORS', cpu).split('/')
+        apply_params = params[0].split("@")
 
-        elif mode == 'medium':
-            params = config.get('PROCESSORS', cpu).split('/')
-            apply_params = params[1].split("@")
+    elif mode == 'medium':
+        params = config.get('PROCESSORS', cpu).split('/')
+        apply_params = params[1].split("@")
 
-        elif mode == 'high':
-            params = config.get('PROCESSORS', cpu).split('/')
-            apply_params = params[2].split("@")
+    elif mode == 'high':
+        params = config.get('PROCESSORS', cpu).split('/')
+        apply_params = params[2].split("@")
 
-        #Turbo value goes first
-        command ='power package '+apply_params[1]+'/3 '+apply_params[0]+'/30'
+    #Turbo value goes first
+    command ='power package '+apply_params[1]+'/3 '+apply_params[0]+'/30'
 
-        line_number = subprocess.getstatusoutput("cat /etc/intel-undervolt.conf | grep 'Power Limits Alteration' -n | cut -d: -f1")
-        
-        if line_number[1] != '':
+    line_number = subprocess.getstatusoutput("cat /etc/intel-undervolt.conf | grep 'Power Limits Alteration' -n | cut -d: -f1")
+    
+    if line_number[1] != '':
 
-            print("Linea de titulo: "+str(int(line_number[1])-1)+" | Linea de comando: "+str(int(line_number[1])-2))
+        print("Linea de titulo: "+str(int(line_number[1])-1)+" | Linea de comando: "+str(int(line_number[1])-2))
 
-            # with is like your try .. finally block in this case
-            with open('/etc/intel-undervolt.conf', 'r') as file:
-                # read a list of lines into data
-                data = file.readlines()
+        # with is like your try .. finally block in this case
+        with open('/etc/intel-undervolt.conf', 'r') as file:
+            # read a list of lines into data
+            data = file.readlines()
 
-            # now change the line, note that you have to add a newline
-            data[int(line_number[1])-2] = command+'\n'
-            print(data[int(line_number[1])-2])
+        # now change the line, note that you have to add a newline
+        data[int(line_number[1])-2] = command+'\n'
+        print(data[int(line_number[1])-2])
 
-            # and write everything back
-            with open('/etc/intel-undervolt.conf', 'w') as file:
-                file.writelines( data )
-        else: 
+        # and write everything back
+        with open('/etc/intel-undervolt.conf', 'w') as file:
+            file.writelines( data )
+    else: 
 
-            print("Data not found")
-        
+        print("Data not found")
+    
 
-        #Necesitamos sudo para modificar el config de intel-undervolt       
-        call = subprocess.getstatusoutput("sudo intel-undervolt apply")
+    #Necesitamos sudo para modificar el config de intel-undervolt       
+    call = subprocess.getstatusoutput("sudo intel-undervolt apply")
 
-        print("sudo intel-undervolt apply --> Exit:"+str(call[0]))
+    print("sudo intel-undervolt apply --> Exit:"+str(call[0]))
         
 
 

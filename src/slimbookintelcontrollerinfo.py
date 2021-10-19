@@ -14,8 +14,6 @@ from gi.repository import Gtk, Gdk, GdkPixbuf
 from os.path import expanduser   
 
 
-# AÑADIR CLASE --> .get_style_context().add_class("button-none")
-
 #IDIOMAS ----------------------------------------------------------------
 
 # pygettext -d slimbookamdcontrollercopy slimbookamdcontrollercopy.py
@@ -56,11 +54,9 @@ class PreferencesDialog(Gtk.Window):
     def __init__(self):
 		
         Gtk.Window.__init__(self,
-			title='',
-            parent=None)
+			title='')
 
         ICON = os.path.join(currpath+'/images/slimbookintelcontroller.svg')
-        #print('Icon route: '+ICON)
         
         try: 
             self.set_icon_from_file(ICON)
@@ -86,7 +82,6 @@ class PreferencesDialog(Gtk.Window):
         self.add(win_grid)
 
     # COMPONETS
-        # Icono APP
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
 			filename= currpath+'/images/logo-sb.png',
 			width=200,
@@ -95,38 +90,23 @@ class PreferencesDialog(Gtk.Window):
         iconApp = Gtk.Image.new_from_pixbuf(pixbuf)
         iconApp.set_name('logo')
 
-
         info = Gtk.Label()
         info.set_markup('<span>'+(_("The Slimbook Intel Controller app is capable of setting several TDP power levels for your Intel mobile processor. Switching between the different performance presets will give you the ability to control both performance and battery life with a single click. Bear in mind that the higher you set your performance level, your processor will also run hotter and drain your battery faster, so keep that in mind! \n\nSlimbook Intel Controller uses the third party software intel-undervolt from kitsunyan."))+'</span>')
         info.set_line_wrap(True)
         info.set_name('label')
 
-        
         info2 = Gtk.Label()
         info2.set_markup('<span>'+_('If you want to support the Slimbook team with the development of this app and several more to come, you can do so by joining our ') + "<a href='https://www.patreon.com/slimbook'> patreon </a>" +_(' or buying a brand new Slimbook.')+'</span>')
         info2.set_line_wrap(True)
         info2.set_name('label')
-
 
         info3 = Gtk.Label()
         info3.set_markup("<span><b>"+_("Note: ")+"</b>"+_("Many laptops limit the power of the CPU, when working without the charger connected. Therefore, if you want to take advantage of the high-performance mode of this application, you may need to connect the charger.")+"</span>")
         info3.set_line_wrap(True)
         info3.set_name('label')
 
-
-        enlaces_box = Gtk.Box(spacing=5)
-        enlaces_box.set_halign(Gtk.Align.CENTER)
-
-        salvavidas = Gtk.Label(label=_('This software is provided * as is * without warranty of any kind..'))
-        salvavidas.set_name('label')
-
-        license1 = Gtk.Label()
-        license1.set_markup("<span><b>"+_("You are free from:")+"</b></span>")
-        license1.set_name('label')
-
-        license2 = Gtk.Label()
-        license2.set_markup("<span><b><small>"+_("Share: ")+"</small></b><small>"+_("copy and redistribute the material in any medium or format\nSlimbook Copyright - License Creative Commons BY-NC-ND")+"</small></span>")
-        license2.set_name('label')
+        warning = Gtk.Label(label=_('This software is provided * as is * without warranty of any kind..'))
+        warning.set_name('label')
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
 			filename=currpath+'/images/cc.png',
@@ -153,6 +133,9 @@ class PreferencesDialog(Gtk.Window):
         evnt_close.connect("button_press_event", self.on_button_close)
 
     # REDES SOCIALES --------------------------------------------------------------
+        enlaces_box = Gtk.Box(spacing=5)
+        enlaces_box.set_halign(Gtk.Align.CENTER)
+
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
 			filename=currpath+'/images/twitter.png',
 			width=25,
@@ -208,10 +191,6 @@ class PreferencesDialog(Gtk.Window):
         else:
             web_link = 'https://slimbook.es/en/'
 
-        web = Gtk.Label()
-        web.set_markup("<span><b><a href='"+web_link+"'>"+_("@Visit Slimbook web")+"</a></b>    </span>")
-        link_box2.pack_start(web , True, True, 0)
-
         #TUTORIAL
         tutorial_link=''
         if entorno_usu.find('es') >= 0:
@@ -219,16 +198,38 @@ class PreferencesDialog(Gtk.Window):
         else:
             tutorial_link = 'https://slimbook.es/en/tutoriales/aplicaciones-slimbook/514-en-slimbook-intel-controller'
 
-        tutorial = Gtk.Label()
-        tutorial.set_markup("<span><b><a href='"+tutorial_link+"'>"+(_("@SlimbookIntelController Tutorial")+"</a></b>    </span>"))
-        tutorial.set_justify(Gtk.Justification.CENTER)
-        link_box2.pack_start(tutorial , True, True, 0)
+        label77 = Gtk.LinkButton(uri=web_link, label =_("Visit @Slimbook web"))
+        label77.set_halign(Gtk.Align.CENTER)
+        link_box2.add(label77)
+
+        label77 = Gtk.LinkButton(uri=tutorial_link, label = (_("@SlimbookIntelController Tutorial")))
+        label77.set_halign(Gtk.Align.CENTER)
+        link_box2.add(label77)
+
+        label77 = Gtk.LinkButton(uri="https://github.com/slimbook/slimbookintelcontroller/tree/main/src/locale", label = (_('Help us with translations!')))
+        label77.set_halign(Gtk.Align.CENTER)
+        link_box2.add(label77)
 
         email = Gtk.Label()
-        email.set_markup("<span><b>"+_("Send an e-mail a: ")+"dev@slimbook.es</b></span>")
+        email.set_markup("<span><b>"+_("Send an e-mail to: ")+"dev@slimbook.es</b></span>")
         email.set_justify(Gtk.Justification.CENTER)
         email.set_name('label')
-    
+
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename= os.path.join(currpath+'/images/', 'GitHub_Logo_White.png'),
+            width=150,
+            height=30,
+            preserve_aspect_ratio=True)
+
+        img = Gtk.Image()
+        img.set_from_pixbuf(pixbuf)
+        
+        github = Gtk.LinkButton(uri="https://github.com/slimbook/slimbookintelcontroller")
+        github.set_name('link')
+        github.set_halign(Gtk.Align.CENTER)
+        github.set_image(img)
+
+        
     # PACKKING ----------------------------------------------------------------------
 
         win_grid.attach(evnt_close,9,0,1,1)
@@ -236,27 +237,18 @@ class PreferencesDialog(Gtk.Window):
         win_grid.attach(iconApp,0,0,10,1)
 
         win_grid.attach(info_grid,0,1,10,15)
-
         
-
-
         info_grid.attach(info,1,2,1,1)
 
         info_grid.attach(enlaces_box,1,3,1,1)
 
         info_grid.attach(link_box2,1,4,1,1)
 
-        info_grid.attach(email,1,5,1,1)
+        info_grid.attach(github,1,5,1,1)
 
-        info_grid.attach(link_box2,1,6,1,1)
+        info_grid.attach(email,1,6,1,1)
 
-        info_grid.attach(salvavidas,1,7,1,1)
-
-        info_grid.attach(license1,1,8,1,1)
-
-        info_grid.attach(license2,1,9,1,1)
-
-        info_grid.attach(licencia,1,10,1,1)
+        info_grid.attach(warning,1,7,1,1)
 
         info_grid.attach(info2,1,11,1,1)
 
@@ -266,21 +258,9 @@ class PreferencesDialog(Gtk.Window):
         #SHOW
         self.show_all()
     
-    def on_buttonCopyEmail_clicked(self, buttonCopyEmail):
-        self.clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
-        self.clipboard.set_text('dev@slimbook.es', -1)
-        os.system("notify-send 'Slimbook AMD Controller' "+_("'The email has been copied to the clipboard'") + " -i '" + currpath + "/images/icono.png'")
-
     def on_button_close(self, button, state):
         self.close()
         self.hide()
         self.destroy()
         Gtk.main_quit
-
-dialog = PreferencesDialog()
-dialog.connect("destroy", Gtk.main_quit)
-dialog.show_all()
-Gtk.main()
-
-
 

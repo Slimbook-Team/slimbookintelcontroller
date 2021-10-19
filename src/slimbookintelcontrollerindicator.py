@@ -11,7 +11,6 @@ import configparser
 import gettext, locale
 import sys
 
-
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 gi.require_version('AppIndicator3', '0.1')
@@ -30,11 +29,19 @@ sys.path.insert(1, srcpath)
 currpath = os.path.dirname(os.path.realpath(__file__))
 
 #Variables
-user_name = subprocess.getoutput("logname")
-user = subprocess.getoutput("echo ~"+user_name)
+USERNAME = subprocess.getstatusoutput("logname")
+
+# 1. Try getting logged username  2. This user is not root  3. Check user exists (no 'reboot' user exists) 
+if USERNAME[0] == 0 and USERNAME[1] != 'root' and subprocess.getstatusoutput('getent passwd '+USERNAME[1]) == 0:
+    USER_NAME = USERNAME[1]
+else:
+    USER_NAME = subprocess.getoutput('last -wn1 | head -n 1 | cut -f 1 -d " "')
+
+HOMEDIR = subprocess.getoutput("echo ~"+USER_NAME)
+
 directorio = '~/.config/slimbookintelcontroller'
 
-config_file = user + '/.config/slimbookintelcontroller/slimbookintelcontroller.conf'
+config_file = HOMEDIR + '/.config/slimbookintelcontroller/slimbookintelcontroller.conf'
 #config_file = currpath + '/slimbookintelcontroller.conf'
 config_object = ConfigParser()
 config = ConfigParser()
@@ -157,9 +164,6 @@ class Indicator():
 
 		#Mostramos indicador, o no :):
 
-		self.testindicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
-		self.testindicator.set_status(AppIndicator3.IndicatorStatus.PASSIVE)
-
 		if config.get('CONFIGURATION', 'show-icon') == 'on':
 			self.testindicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)
 			print('- Autostart enabled')
@@ -177,14 +181,13 @@ class Indicator():
 
 		if config.get('CONFIGURATION', 'mode') == "low":
 			print('- Low\n')
-			self.bajorendimiento('x')
-		else:
-			if config.get('CONFIGURATION', 'mode') == "medium":
-				print('- Medium\n')
-				self.mediorendimiento('x')
-			else:
-				print('- High\n')
-				self.altorendimiento('x')
+			self.bajorendimiento()
+		elif config.get('CONFIGURATION', 'mode') == "medium":
+			print('- Medium\n')
+			self.mediorendimiento()
+		elif config.get('CONFIGURATION', 'mode') == "high":
+			print('- High\n')
+			self.altorendimiento()
 		
 		print("\nData loaded from .conf\n")
 
@@ -200,7 +203,7 @@ class Indicator():
 		print("Variable |"+variable+"| updated, actual value: "+value+"\n")
 
 	#Funcion para configuracion de bajo rendimiento
-	def bajorendimiento(self, widgets):
+	def bajorendimiento(self, widget=None):
 		self.modo_actual="low"
 		self.icono_actual= low_img
 		self.testindicator.set_icon_full('intel-green', 'icon_low')
@@ -210,7 +213,7 @@ class Indicator():
 		os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
 
 	#Funcion para configuracion de medio rendimiento
-	def mediorendimiento(self, widget):
+	def mediorendimiento(self, widget=None):
 		self.modo_actual="medium"
 		self.icono_actual=medium_img
 		self.testindicator.set_icon_full('intel-blue', 'icon_medium')
@@ -220,7 +223,7 @@ class Indicator():
 		os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
 
 	#Funcion para configuracion de alto rendimiento
-	def altorendimiento(self, widget):
+	def altorendimiento(self, widget=None):
 		self.modo_actual="high"
 		self.icono_actual=high_img
 		self.testindicator.set_icon_full('intel-red', 'icon_high')
