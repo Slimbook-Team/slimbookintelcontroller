@@ -21,7 +21,7 @@ msgid ""
 "\n"
 "Slimbook Intel Controller uses the third party software intel-undervolt from kitsunyan."
 msgstr ""
-"La aplicación Slimbook Intel Controller es capaz de establecer diferentes modos de TDP para tu procesador portátil Intel. Seccionar los diferentes ajustes preestablecidos de rendimiento le dará la capacidad de controlar tanto el rendimiento como la duración de la batería con un solo click. Cuanto más alto sea el nivel de rendimiento, su procesador se calentará más y agotará su batería más rápido, ¡Así que tenlo en cuenta! \n"
+"La aplicación Slimbook Intel Controller es capaz de establecer diferentes modos de TDP para tu procesador portátil Intel. Utilizar los diferentes ajustes preestablecidos de rendimiento le dará la capacidad de controlar tanto el rendimiento como la duración de la batería con un solo click. Cuanto más alto sea el nivel de rendimiento, el procesador se calentará más y agotará su batería más rápido, ¡Así que tenlo en cuenta! \n"
 "\n"
 "Slimbook Intel Controller utiliza el sofware Intel-Undervolt de kitsunyan."
 

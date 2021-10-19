@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2021-09-01 09:26+0200\n"
+"POT-Creation-Date: 2021-09-27 16:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,60 +15,46 @@ msgstr ""
 "Generated-By: pygettext.py 1.5\n"
 
 
-#: slimbookintelcontrollerinfo.py:100
+#: slimbookintelcontrollerinfo.py:94
 msgid ""
 "The Slimbook Intel Controller app is capable of setting several TDP power levels for your Intel mobile processor. Switching between the different performance presets will give you the ability to control both performance and battery life with a single click. Bear in mind that the higher you set your performance level, your processor will also run hotter and drain your battery faster, so keep that in mind! \n"
 "\n"
 "Slimbook Intel Controller uses the third party software intel-undervolt from kitsunyan."
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:106
+#: slimbookintelcontrollerinfo.py:99
 msgid " or buying a brand new Slimbook."
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:106
+#: slimbookintelcontrollerinfo.py:99
 msgid "If you want to support the Slimbook team with the development of this app and several more to come, you can do so by joining our "
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:112
+#: slimbookintelcontrollerinfo.py:104
 msgid "Many laptops limit the power of the CPU, when working without the charger connected. Therefore, if you want to take advantage of the high-performance mode of this application, you may need to connect the charger."
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:112
+#: slimbookintelcontrollerinfo.py:104
 msgid "Note: "
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:120
+#: slimbookintelcontrollerinfo.py:108
 msgid "This software is provided * as is * without warranty of any kind.."
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:124
-msgid "You are free from:"
+#: slimbookintelcontrollerinfo.py:201
+msgid "Visit @Slimbook web"
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:128
-msgid "Share: "
-msgstr ""
-
-#: slimbookintelcontrollerinfo.py:128
-msgid ""
-"copy and redistribute the material in any medium or format\n"
-"Slimbook Copyright - License Creative Commons BY-NC-ND"
-msgstr ""
-
-#: slimbookintelcontrollerinfo.py:212
-msgid "@Visit Slimbook web"
-msgstr ""
-
-#: slimbookintelcontrollerinfo.py:223
+#: slimbookintelcontrollerinfo.py:205
 msgid "@SlimbookIntelController Tutorial"
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:228
-msgid "Send an e-mail to: "
+#: slimbookintelcontrollerinfo.py:209
+msgid "Help us with translations!"
 msgstr ""
 
-#: slimbookintelcontrollerinfo.py:268
-msgid "'The email has been copied to the clipboard'"
+#: slimbookintelcontrollerinfo.py:214
+msgid "Send an e-mail to: "
 msgstr ""
 

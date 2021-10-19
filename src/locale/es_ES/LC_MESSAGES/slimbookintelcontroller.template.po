@@ -43,3 +43,19 @@ msgstr "ACEPTAR"
 msgid "CANCEL"
 msgstr "CANCELAR"
 
+#: slimbookintelcontroller.py:196
+msgid "CPU Warning"
+msgstr "Alerta, CPU no soportada."
+
+
+#: slimbookintelcontroller.py:197
+msgid "Your CPU model is nor supported. To add it by your own, check the tutorial Link / Github Link in the information window or contact us for more information."
+msgstr "Tu CPU no está soportada. Para añadirla por ti mismo/a, comprueba el Link del tutorial / Link de Github en la ventana de información o contacta con nosotros."
+
+#: slimbookintelcontroller.py:177
+msgid "Secureboot Warning"
+msgstr "Alerta de SecureBoot"
+
+#: slimbookintelcontroller.py:178
+msgid "This computer has Secureboot enabled, which does not allow kernel to manage CPU parameters."
+msgstr "Este ordenador tiene SecureBoot activo, ésto no permite al kernel modificar los parámetros de la CPU."

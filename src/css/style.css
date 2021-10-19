@@ -9,9 +9,11 @@ window, dialog{
     border-style: solid;
 } */
 
-/* window grid {
-    margin: 10px;   
-} */
+window grid grid{
+    padding-top: 40px; 
+    margin-left: 50px;  
+    margin-right: 50px;  
+}
 
 #info_grid, #info_win grid{
     margin: 15px;
@@ -20,6 +22,10 @@ window, dialog{
     border-style: solid; */
 }
 
+#link:hover, #link:active {
+    background-color: steelblue;
+    background: steelblue;
+}
 
 radiobutton {
     color: white;
@@ -32,6 +38,11 @@ radiobutton {
     color: black;
 }
 
+#version {
+    padding: 10px;
+    color: white;
+}
+
 #buttons label {
     color: black;
 }
@@ -39,7 +50,7 @@ radiobutton {
 
 #cpu_info{
     padding-top: 10px;
-    padding-bottom: 40px;
+    padding-bottom: 10px;
 }
 #logo{
     padding-top: 10px;
@@ -51,18 +62,16 @@ radiobutton {
 }
 
 .close, .help{
-    padding-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-bottom: 10px;
-    
+    padding: 10px;  
 }
 
 .modes {
     font-size:xx-large;
     font-weight: bold;
 }
-
+radiobutton:checked, radiobutton:active{
+    border-style: none;
+}
 /* .close {
     margin-bottom: 50px;
 } */
