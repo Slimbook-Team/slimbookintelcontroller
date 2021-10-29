@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 #
 
-import gettext
+import utils
 import signal
 import subprocess
 import os
 import gi
 import configparser
-import gettext, locale
 import sys
 
 gi.require_version('Gtk', '3.0')
@@ -20,68 +19,42 @@ from gi.repository import Gtk, GdkPixbuf, AppIndicator3
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from configparser import ConfigParser
-from os.path import expanduser
-
 
 srcpath = '/usr/share/slimbookintelcontroller/src'
 sys.path.insert(1, srcpath)
 
-currpath = os.path.dirname(os.path.realpath(__file__))
+CURRRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 #Variables
-USERNAME = subprocess.getstatusoutput("logname")
-
-# 1. Try getting logged username  2. This user is not root  3. Check user exists (no 'reboot' user exists) 
-if USERNAME[0] == 0 and USERNAME[1] != 'root' and subprocess.getstatusoutput('getent passwd '+USERNAME[1]) == 0:
-    USER_NAME = USERNAME[1]
-else:
-    USER_NAME = subprocess.getoutput('last -wn1 | head -n 1 | cut -f 1 -d " "')
+USER_NAME = utils.get_user()
 
 HOMEDIR = subprocess.getoutput("echo ~"+USER_NAME)
 
 directorio = '~/.config/slimbookintelcontroller'
 
-config_file = HOMEDIR + '/.config/slimbookintelcontroller/slimbookintelcontroller.conf'
-#config_file = currpath + '/slimbookintelcontroller.conf'
+config_file = os.path.join(HOMEDIR , '.config/slimbookintelcontroller/slimbookintelcontroller.conf')
+
 config_object = ConfigParser()
 config = ConfigParser()
 config.read(config_file)
 
 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename = currpath+'/images/slimbookintelcontroller_header.png',
+            filename = '{}/images/slimbookintelcontroller_header.png'.format(CURRRENT_PATH),
 			width = 200,
 			height = 150,
 			preserve_aspect_ratio=True)
 
-
 print(config_file)
 
-iconapp = currpath+'/amd.png'
+iconapp = CURRRENT_PATH+'/amd.png'
 
-low_img = currpath+'/images/intel-green.png'
+low_img = CURRRENT_PATH+'/images/intel-green.png'
 
-medium_img = currpath+'/images/intel-green.png'
+medium_img = CURRRENT_PATH+'/images/intel-green.png'
 
-high_img = currpath+'/images/intel-green.png'
+high_img = CURRRENT_PATH+'/images/intel-green.png'
 
-entorno_usu = locale.getlocale()[0]
-
-try:
-	if entorno_usu.find("en") >= 0 or entorno_usu.find("es") >= 0:
-		idiomas = [entorno_usu]
-	else: 
-		idiomas = ['en_EN'] 
-except:
-	idiomas = ['en_EN'] 
-
-# Configurar el acceso al catálogo de mensajes
-t = gettext.translation('slimbookintelcontrollerindicator', 
-                        currpath+'/locale', 
-                        languages=idiomas,
-                        fallback=True,)
-_ = t.gettext
-
-
+_ = utils.load_translation('slimbookintelcontrollerindicator')
 
 #Menu
 class Indicator():
@@ -91,12 +64,12 @@ class Indicator():
 
 	def __init__(self):
 		self.app = 'show_proc'
-		iconpath = currpath+'/images/intel-green.png'
+		iconpath = '{}/images/intel-green.png'.format(CURRRENT_PATH)
 		# after you defined the initial indicator, you can alter the icon!
 		self.testindicator = AppIndicator3.Indicator.new(
 			self.app, iconpath, AppIndicator3.IndicatorCategory.OTHER)
 
-		self.testindicator.set_icon_theme_path(currpath+'/images/')
+		self.testindicator.set_icon_theme_path(CURRRENT_PATH+'/images/')
 		self.testindicator.set_status(AppIndicator3.IndicatorStatus.ACTIVE)       
 		self.testindicator.set_menu(self.create_menu())
 		self.inicio()
@@ -107,13 +80,13 @@ class Indicator():
 		menu = Gtk.Menu()
 	
 		icon_bajo = Gtk.Image()
-		icon_bajo.set_from_file(currpath+'/images/intel-green.png')
+		icon_bajo.set_from_file(CURRRENT_PATH+'/images/intel-green.png')
 
 		icon_medio = Gtk.Image()
-		icon_medio.set_from_file(currpath+'/images/intel-blue.png')
+		icon_medio.set_from_file(CURRRENT_PATH+'/images/intel-blue.png')
 
 		icon_alto = Gtk.Image()
-		icon_alto.set_from_file(currpath+'/images/intel-red.png')
+		icon_alto.set_from_file(CURRRENT_PATH+'/images/intel-red.png')
 
 
 		item_bajo = Gtk.ImageMenuItem(label=_('Low performance'), image = icon_bajo)
@@ -147,7 +120,6 @@ class Indicator():
 		menu.show_all()
 
 		return menu
-
 	
 	def exit(self, source):
 		Gtk.main_quit()
@@ -191,7 +163,6 @@ class Indicator():
 		
 		print("\nData loaded from .conf\n")
 
-
 	def update_config_file(self, variable, value):
 		# We change our variable: config.set(section, variable, value)
 		config.set('CONFIGURATION', str(variable), str(value))
@@ -232,11 +203,11 @@ class Indicator():
 		self.update_config_file("mode", self.modo_actual)
 		os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
 
-	
+call = subprocess.getstatusoutput('mokutil --sb-state | grep -i "SecureBoot disabled"')
 
-	
-
-	
+if not call[0] == 0:
+	print('Disable Secureboot, please.')
+	sys.exit(1)
 
 Indicator()
 

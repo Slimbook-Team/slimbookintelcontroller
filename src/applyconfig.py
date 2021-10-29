@@ -8,19 +8,13 @@ import subprocess
 import shutil
 from time import sleep
 from configparser import ConfigParser
+import utils
 
 print('SlimbookIntelController-Applyconfig, executed as: '+str(subprocess.getoutput('whoami')))
 
 print(subprocess.getoutput("echo $USERNAME"))
 
-USERNAME = subprocess.getstatusoutput("logname")
-
-# 1. Try getting logged username  2. This user is not root  3. Check user exists (no 'reboot' user exists) 
-if USERNAME[0] == 0 and USERNAME[1] != 'root' and subprocess.getstatusoutput('getent passwd '+USERNAME[1]) == 0:
-    USER_NAME = USERNAME[1]
-else:
-    USER_NAME = subprocess.getoutput('last -wn1 | head -n 1 | cut -f 1 -d " "')
-
+USER_NAME = utils.get_user()
 HOMEDIR = subprocess.getoutput("echo ~"+USER_NAME)
 
 print("Homedir: "+HOMEDIR+"\n")
@@ -28,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
 print(LAUNCHER_DESKTOP)
 
-AUTOSTART_DESKTOP = os.path.expanduser("/home/"+USER_NAME+"/.config/autostart/slimbookintelcontroller-autostart.desktop")
+AUTOSTART_DESKTOP = os.path.expanduser("{}/.config/autostart/slimbookintelcontroller-autostart.desktop".format(HOMEDIR))
 print(AUTOSTART_DESKTOP)
 
 config_file = HOMEDIR+'/.config/slimbookintelcontroller/slimbookintelcontroller.conf'
@@ -78,19 +72,7 @@ def main(args): # Args will be like --> command_name value
                 if os.path.isfile(AUTOSTART_DESKTOP):
                     os.remove(AUTOSTART_DESKTOP)                
                     print("File -autostart has been deleted.")
-            
-
-        elif args[1] == "secureboot_state":
-            #print(args[1])
-            print()
-
-            if subprocess.getoutput('sudo mokutil --sb-state') == 'SecureBoot disabled':
-                
-                print('Able to use intel-undervolt')
-
-            else:
-                print('Unable to use intel-undervolt')       	
-            
+           
 
     else: #--> Apply all
         apply_all()

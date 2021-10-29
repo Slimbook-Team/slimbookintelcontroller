@@ -4,45 +4,30 @@
 import os
 import gi
 import subprocess
-import gettext, locale
+import utils
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 
 from pathlib import Path
 from gi.repository import Gtk, Gdk, GdkPixbuf     
-from os.path import expanduser   
+ 
 
 
 #IDIOMAS ----------------------------------------------------------------
 
 # pygettext -d slimbookamdcontrollercopy slimbookamdcontrollercopy.py
 
-currpath = os.path.dirname(os.path.realpath(__file__))
-entorno_usu = locale.getlocale()[0]
-try: 
-    if entorno_usu.find("en") >= 0 or entorno_usu.find("es") >= 0:
-	    idiomas = [entorno_usu]
-    else: 
-        idiomas = ['en_EN'] 
-except:
-    idiomas = ['en_EN'] 
+CURRRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
+_ = utils.load_translation('slimbookintelcontrollerinfo')
 
-print('Language: ', idiomas)
-t = gettext.translation('slimbookintelcontrollerinfo',
-						currpath+'/locale',
-						languages=idiomas,
-						fallback=True,) 
-_ = t.gettext
+USER_NAME = utils.get_user()
+HOMEDIR = subprocess.getoutput("echo ~"+USER_NAME)
 
-
-user_name = subprocess.getoutput("logname")
-user = subprocess.getoutput("echo ~"+user_name)
-
-
+# Adding CSS
 style_provider = Gtk.CssProvider()
-style_provider.load_from_path(currpath+'/css/style.css')
+style_provider.load_from_path(CURRRENT_PATH+'/css/style.css')
 
 Gtk.StyleContext.add_provider_for_screen (
     Gdk.Screen.get_default(), style_provider,
@@ -56,7 +41,7 @@ class PreferencesDialog(Gtk.Window):
         Gtk.Window.__init__(self,
 			title='')
 
-        ICON = os.path.join(currpath+'/images/slimbookintelcontroller.svg')
+        ICON = os.path.join(CURRRENT_PATH+'/images/slimbookintelcontroller.svg')
         
         try: 
             self.set_icon_from_file(ICON)
@@ -83,7 +68,7 @@ class PreferencesDialog(Gtk.Window):
 
     # COMPONETS
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-			filename= currpath+'/images/logo-sb.png',
+			filename= CURRRENT_PATH+'/images/logo-sb.png',
 			width=200,
 			height=100,
 			preserve_aspect_ratio=True)
@@ -109,7 +94,7 @@ class PreferencesDialog(Gtk.Window):
         warning.set_name('label')
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-			filename=currpath+'/images/cc.png',
+			filename=CURRRENT_PATH+'/images/cc.png',
 			width=100,
 			height=50,
 			preserve_aspect_ratio=True)
@@ -117,7 +102,7 @@ class PreferencesDialog(Gtk.Window):
         licencia = Gtk.Image.new_from_pixbuf(pixbuf)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-			filename=currpath+'/images/cross.png',
+			filename=CURRRENT_PATH+'/images/cross.png',
 			width=20,
 			height=20,
 			preserve_aspect_ratio=True)
@@ -137,7 +122,7 @@ class PreferencesDialog(Gtk.Window):
         enlaces_box.set_halign(Gtk.Align.CENTER)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-			filename=currpath+'/images/twitter.png',
+			filename=CURRRENT_PATH+'/images/twitter.png',
 			width=25,
 			height=25,
 			preserve_aspect_ratio=True)
@@ -152,7 +137,7 @@ class PreferencesDialog(Gtk.Window):
         enlaces_box.pack_start(twitter, False, False, 0)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-			filename=currpath+'/images/facebook.png',
+			filename=CURRRENT_PATH+'/images/facebook.png',
 			width=25,
 			height=25,
 			preserve_aspect_ratio=True)
@@ -166,7 +151,7 @@ class PreferencesDialog(Gtk.Window):
         enlaces_box.pack_start(facebook, False, False, 0)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-			filename=currpath+'/images/insta.png',
+			filename=CURRRENT_PATH+'/images/insta.png',
 			width=25,
 			height=25,
 			preserve_aspect_ratio=True)
@@ -186,14 +171,15 @@ class PreferencesDialog(Gtk.Window):
 
         #WEB
         web_link=''
-        if entorno_usu.find('es') >= 0:
+        idiomas = utils.get_languages()[0]
+        if idiomas.find('es') >= 0:
             web_link = 'https://slimbook.es/es/'
         else:
             web_link = 'https://slimbook.es/en/'
 
         #TUTORIAL
         tutorial_link=''
-        if entorno_usu.find('es') >= 0:
+        if idiomas.find('es') >= 0:
             tutorial_link = 'https://slimbook.es/es/tutoriales/aplicaciones-slimbook/515-slimbook-intel-controller'
         else:
             tutorial_link = 'https://slimbook.es/en/tutoriales/aplicaciones-slimbook/514-en-slimbook-intel-controller'
@@ -216,7 +202,7 @@ class PreferencesDialog(Gtk.Window):
         email.set_name('label')
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename= os.path.join(currpath+'/images/', 'GitHub_Logo_White.png'),
+            filename= os.path.join(CURRRENT_PATH, 'images', 'GitHub_Logo_White.png'),
             width=150,
             height=30,
             preserve_aspect_ratio=True)
