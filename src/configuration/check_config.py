@@ -19,23 +19,20 @@ DEFAULT_CONF = os.path.join(CURRENT_PATH, 'slimbookintelcontroller.conf')
 CONFIG_FOLDER = os.path.join(HOMEDIR, '.config/slimbookintelcontroller')
 CONFIG_FILE = os.path.join(CONFIG_FOLDER, 'slimbookintelcontroller.conf')
 
-uid, gid =  pwd.getpwnam(USER_NAME).pw_uid, pwd.getpwnam(USER_NAME).pw_gid
-
-def main():    
+uid, gid = pwd.getpwnam(USER_NAME).pw_uid, pwd.getpwnam(USER_NAME).pw_gid
 
 
-    if not (os.path.isdir(CONFIG_FOLDER) == True):
+def main():
+    if not os.path.isdir(CONFIG_FOLDER):
         print('Creating config folder ...')
         os.umask(0)
-        os.makedirs(CONFIG_FOLDER, mode=0o766) # creates with perms 
-        os.chown(CONFIG_FOLDER, uid, gid) # set user:group 
-        print(subprocess.getoutput('ls -la '+CONFIG_FOLDER))
+        os.makedirs(CONFIG_FOLDER, mode=0o766)  # creates with perms
+        os.chown(CONFIG_FOLDER, uid, gid)  # set user:group
+        print(subprocess.getoutput('ls -la ' + CONFIG_FOLDER))
     else:
-        print('Configuration folder ('+CONFIG_FOLDER+') found!')
+        print('Configuration folder (' + CONFIG_FOLDER + ') found!')
 
     check_config_file()
-
-    
 
 
 def check_config_file():
@@ -74,7 +71,6 @@ def check_config_file():
     else:
         print('Creating config file ...')
         shutil.copy(DEFAULT_CONF, CONFIG_FOLDER)
-
 
 
 if __name__ == '__main__':
