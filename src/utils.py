@@ -1,6 +1,6 @@
 import getpass
 import gettext
-import os
+import os, pwd
 import subprocess
 import locale
 
@@ -47,3 +47,26 @@ def load_translation(filename):
         languages=languages,
         fallback=True
     ).gettext
+
+# INTEL CONTROLLER
+def get_uid(username):
+    return pwd.getpwnam(username).pw_uid
+    
+def get_gid(username):
+    return pwd.getpwnam(username).pw_gid
+
+def get_os_info():
+    info = subprocess.getoutput('cat /etc/os-release ').split('\n')
+    return info
+
+def get_cpu_info(var='info'):
+    info = ()
+    if var == 'name':
+        return subprocess.getoutput('cat /proc/cpuinfo | grep name | uniq').split(':')[1].strip()
+    if var == 'cores':
+        return subprocess.getoutput('nproc')
+    if var == 'threadspercore':
+        cores = subprocess.getoutput('cat /proc/cpuinfo | grep "cpu cores" | uniq').split(':')[1].strip()
+        return cores
+    if var == 'info':
+        print('Information get_cpu_info().\nOptions: \n\tname\n\tcores\n\tthreadspercore')

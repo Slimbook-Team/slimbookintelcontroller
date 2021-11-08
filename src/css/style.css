@@ -1,7 +1,19 @@
+/* @import url("resource:///org/gtk/libgtk/theme/Adwaita/gtk-contained-dark.css"); */
 window, dialog{
     background-image: radial-gradient(circle at center, rgb(24, 24, 24) 0%, black 100%);
 }
 
+#settings>grid, #dialog>box{
+    border: 1px red solid;
+    padding:20px;
+}
+
+#settings separator {
+    border: 1px red solid;
+}
+#settings>grid>label, #settings>grid>box>label, dialog>box>label {
+    color: white
+}
 
 /* window *{
     border-width: 1px;
@@ -9,7 +21,7 @@ window, dialog{
     border-style: solid;
 } */
 
-window grid grid{
+#main grid grid{
     padding-top: 40px; 
     margin-left: 50px;  
     margin-right: 50px;  
@@ -57,7 +69,7 @@ radiobutton {
     padding-bottom: 10px;
 }
 
-#label, dialog label, label:visited, link, grid>grid label {
+#label, label:visited, link, grid>grid label {
     color: rgb(255, 255, 255);   
 }
 

@@ -12,9 +12,10 @@ import sys
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
+gi.require_version('AyatanaAppIndicator3', '0.1')
 
-from gi.repository import Gtk, GdkPixbuf, AppIndicator3
+from gi.repository import Gtk, GdkPixbuf
+from gi.repository import AyatanaAppIndicator3 as AppIndicator3
 
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk

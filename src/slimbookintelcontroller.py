@@ -7,47 +7,46 @@ import gi
 import math
 import subprocess
 import re #Busca patrones expresiones regulares
-
-# We want load first current location
-CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-if CURRENT_PATH not in sys.path:
-    sys.path = [CURRENT_PATH] + sys.path
-
-import utils
 import slimbookintelcontrollerinfo as info
-from applyconfig import USER_NAME
+import utils
 
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-gi.require_version('AppIndicator3', '0.1')
 
 from configparser import ConfigParser
 from gi.repository import Gdk, Gtk, GdkPixbuf, GLib
 
-CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+currpath = os.path.dirname(os.path.realpath(__file__))
 srcpath = '/usr/share/slimbookintelcontroller/src'
-sys.path.insert(1, CURRENT_PATH)
+sys.path.insert(1, currpath)
 
 USER_NAME = utils.get_user()
-HOMEDIR = os.path.expanduser('~{}'.format(USER_NAME))
+HOMEDIR = os.path.expanduser('~'.format(USER_NAME))
 
 config_object = ConfigParser()
-config_file = os.path.join(HOMEDIR , '.config/slimbookintelcontroller/slimbookintelcontroller.conf')
+config_file = '{}/.config/slimbookintelcontroller/slimbookintelcontroller.conf'.format(HOMEDIR)
+processors_file = currpath+'/processors/available'
 
-LAUNCHER_DESKTOP = os.path.join(CURRENT_PATH, "slimbookintelcontroller-autostart.desktop")
-
-AUTOSTART_DESKTOP = os.path.expanduser("~/.config/autostart/slimbookintelcontroller-autostart.desktop")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
+print(LAUNCHER_DESKTOP)
+AUTOSTART_DESKTOP = os.path.expanduser("{}/.config/autostart/slimbookintelcontroller-autostart.desktop".format(HOMEDIR))
+print(AUTOSTART_DESKTOP)
 
 # IDIOMAS ----------------------------------------------------------------
 
+# CMD(Genera .pot):  pygettext -d slimbookintelcontrollercopy slimbookintelcontrollercopy.py
+# CMD(Genera .mo a partir de .po):  msgfmt -o slimbookintelcontrollercopy.po slimbookintelcontrollercopy.mo
+
 _ = utils.load_translation('slimbookintelcontroller')
 
+
 #Command exit to variable
-cpu = subprocess.getoutput('cat /proc/cpuinfo | grep '+'name'+'| uniq')
+cpu = utils.get_cpu_info('name')
 print(cpu)
 
 #Read proc patron
-patron = re.compile('[ ](\w\d)[-]([0-9]{4,5})(\w*)[ ]')
+patron = re.compile('(\w\d)[-]([0-9]{4,5})(\w*)[ ]')
 version = patron.search(cpu).group(1)
 number = patron.search(cpu).group(2)
 line_suffix = patron.search(cpu).group(3)
@@ -58,9 +57,10 @@ config = ConfigParser()
 config.read(config_file)
 
 proc_config = ConfigParser()
-proc_config.read(CURRENT_PATH+'/processors/available.conf')
+proc_config.read(currpath+'/processors/available.conf')
 
 print("CPU | Model: '"+model_cpu+"' | Version: "+version,"| CPU Numbers: "+number, "| CPU Letters: "+line_suffix+".")
+       
 
 class SlimbookINTEL(Gtk.ApplicationWindow):
 
@@ -77,16 +77,17 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     # WINDOW
 
         Gtk.Window.__init__(self, title ="Slimbook Intel Controller")
-        ICON = (CURRENT_PATH+'/images/slimbookintelcontroller.svg')      
+        ICON = (currpath+'/images/slimbookintelcontroller.svg')      
         try: 
             self.set_icon_from_file(ICON)
         except:
             print("Icon not found"+ICON)
 
         self.set_decorated(False)
-        # self.set_size_request(925,590) #anchoxalto
         self.set_position(Gtk.WindowPosition.CENTER)
         self.get_style_context().add_class("bg-image")
+        self.set_size_request(700,0) #anchoxalto
+        self.set_name('main')
 
         ### Movement
         self.active = True
@@ -144,8 +145,9 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     def on_btnAceptar_clicked(self, widget):
 
         # Check secureboot        
-        call = subprocess.getstatusoutput('mokutil --sb-state | grep -i "SecureBoot disabled"')
+        call = subprocess.getstatusoutput("pkexec slimbookintelcontroller-pkexec secureboot_state")
 
+        print(call)
         if not call[0] == 0:
             self.dialog(_("Secureboot Warning"),
                         _("This computer has Secureboot enabled, which does not allow kernel to manage CPU parameters."))
@@ -168,6 +170,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         else:
             self.dialog(_("CPU Warning"),
                         _("Your CPU model is nor supported. To add it by your own, check the tutorial Link / Github Link in the information window or contact us for more information."))
+        #CLOSE PROGRAM
 
         Gtk.main_quit()
 
@@ -185,6 +188,10 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         )
 
         dialog.set_position(Gtk.WindowPosition.CENTER)
+
+        # if link != None:
+        #     link_button =Gtk.LinkButton(label = 'Link', uri = link)
+        #     dialog.add_action_widget(link_button, 0)
 
         response = dialog.run()
 
@@ -245,7 +252,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     # CONTENT --------------------------------------------------------------------------------
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename = CURRENT_PATH+'/images/slimbookintelcontroller_header.png',
+            filename = currpath+'/images/slimbookintelcontroller_header.png',
 			width = 700,
 			height = 200,
 			preserve_aspect_ratio=True)
@@ -269,6 +276,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         button2.set_halign(Gtk.Align.START)
         button2.get_style_context().add_class("button-none")
 
+
         self.switch1 = Gtk.Switch()
         self.switch1.set_halign(Gtk.Align.END)
         self.switch2 = Gtk.Switch()
@@ -290,6 +298,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         # CPU Temp
         thermal_zones = subprocess.getstatusoutput(
             'ls /sys/class/thermal/ | grep thermal_zone')[1].split('\n')
+        # print(str(thermal_zones))
 
         cpu_thermal_zone = None
         for thermal_zone in thermal_zones:
@@ -321,7 +330,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         separador.set_halign(Gtk.Align.CENTER)
 
         pixbuf1 = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename = CURRENT_PATH+'/images/cross.png',
+            filename = currpath+'/images/cross.png',
 			width = 20,
 			height = 20,
 			preserve_aspect_ratio=True)
@@ -335,11 +344,35 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         evnt_close.add(close)
         evnt_close.connect("button_press_event", self.on_btnCerrar_clicked)
 
+        settings = Gtk.Button(label = 'Settings')
+        info = Gtk.Button(label = 'Info')
+
+        menu = Gtk.Menu()
+        menu.append(Gtk.MenuItem(label="lp"))
+        menu.append(Gtk.MenuItem(label="pl"))
+
+        pixbuf1 = GdkPixbuf.Pixbuf.new_from_file_at_scale(
+            filename = currpath+'/images/settings.png',
+			width = 20,
+			height = 20,
+			preserve_aspect_ratio=True)
+
+        settings = Gtk.Image.new_from_pixbuf(pixbuf1)
+        evnt_settings = Gtk.EventBox()
+        evnt_settings.set_valign(Gtk.Align.CENTER)
+        evnt_settings.set_halign(Gtk.Align.END)
+        evnt_settings.add(settings)
+        evnt_settings.connect("button_press_event", self.settings)
+
+        hbox_close = Gtk.HBox()
+        hbox_close.add(evnt_settings)
+        hbox_close.add(evnt_close)
+
     # RADIOS ---------------------------------------------------------------------------------
 
         img = ''
-        idiomas = utils.get_languages()[0]
-        if idiomas.find("es") >= 0:         #Español
+        entorno_usu = utils.get_languages()[0]
+        if entorno_usu.find("es") >= 0:         #Español
             img='modos_es.png'
         else: 
             img='modos_en.png'                  #Inglés
@@ -354,7 +387,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         rbutton1.set_name('radiobutton') 
         rbutton1.set_halign(Gtk.Align.CENTER)
 
-        rbutton1_img = Gtk.Image.new_from_file(CURRENT_PATH+'/images/modo1.png')
+        rbutton1_img = Gtk.Image.new_from_file(currpath+'/images/modo1.png')
         rbutton1_img.set_halign(Gtk.Align.CENTER)
 
         vbox1.pack_start(rbutton1_img, False, False, 0)
@@ -366,7 +399,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         rbutton2.set_name('radiobutton')
         rbutton2.set_halign(Gtk.Align.CENTER)
 
-        rbutton2_img = Gtk.Image.new_from_file(CURRENT_PATH+'/images/modo2.png')
+        rbutton2_img = Gtk.Image.new_from_file(currpath+'/images/modo2.png')
         rbutton2_img.set_halign(Gtk.Align.CENTER)
         
         vbox2.pack_start(rbutton2_img, False, False, 0)
@@ -378,7 +411,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         rbutton3.set_name('radiobutton')
         rbutton3.set_halign(Gtk.Align.CENTER)
         
-        rbutton3_img = Gtk.Image.new_from_file(CURRENT_PATH+'/images/modo3.png')
+        rbutton3_img = Gtk.Image.new_from_file(currpath+'/images/modo3.png')
         rbutton3_img.set_halign(Gtk.Align.CENTER)
         
         vbox3.pack_start(rbutton3_img, False, False, 0)
@@ -412,7 +445,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     # BTNABOUT_US ----------------------------------------------------------------------------
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename = CURRENT_PATH+'/images/question.png',
+            filename = currpath+'/images/question.png',
 			width = 20,
 			height = 20,
 			preserve_aspect_ratio=True)
@@ -432,18 +465,10 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         version_tag.set_halign(Gtk.Align.START)
         version_tag.set_valign(Gtk.Align.END)
         version_tag.set_name('version')
-
-        version_parser = ConfigParser()
-        version_parser.read('/usr/share/applications/slimbookintelcontroller.desktop')
-
-        try:
-            version = version_parser.get('Desktop Entry','Version')
-            print (version)
-        except:
-            version = 'Unknown'
-            
-        version_tag.set_markup('<span font="10">Version '+version+'</span>')
-
+        version_line = subprocess.getstatusoutput("cat "+currpath+"/changelog |head -n1| egrep -o '\(.*\)'")
+        if version_line[0] == 0:
+            version = version_line[1]
+            version_tag.set_markup('<span font="10">Version '+version[1:len(version)-1]+'</span>')
         version_tag.set_justify(Gtk.Justification.CENTER)
 
     # GRID ATTACH ----------------------------------------------------------------------------
@@ -464,7 +489,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         
         win_grid.attach(grid, 1, 2, 8, 10)
         win_grid.attach(header_img, 1, 0, 8, 8)            
-        win_grid.attach(evnt_close, 8, 0, 1, 1)
+        win_grid.attach(hbox_close, 8, 0, 1, 1)
         win_grid.attach(evnt_box, 8, 12, 1, 1)
         win_grid.attach(version_tag, 1, 12, 2, 1)
         win_grid.attach(botonesBox, 1, 12, 8, 1)
@@ -521,6 +546,11 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         except Exception:
 
             print('Processor not found in list')
+            # if entorno_usu.find('es') >= 0:
+            #     tutorial_link = 'https://slimbook.es/es/tutoriales/aplicaciones-slimbook/515-slimbook-intel-controller'
+            # else:
+            #     tutorial_link = 'https://slimbook.es/en/tutoriales/aplicaciones-slimbook/514-en-slimbook-intel-controller'
+
             self.exec_indicator = False
 
     def reboot_indicator(self):
@@ -533,7 +563,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         print(self.exec_indicator)
         if self.exec_indicator == True:
             print('Starting indicator...')
-            os.system('python3 '+CURRENT_PATH+'/slimbookintelcontrollerindicator.py  &')
+            os.system('python3 '+currpath+'/slimbookintelcontrollerindicator.py  &')
             print()
         else:
             print('Not launching indicator, exceptions found')
@@ -543,6 +573,13 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         #Abre la ventana de info
         self.active = False
         dialog = info.PreferencesDialog()
+        dialog.connect("destroy", self.close_dialog)
+        dialog.show_all()
+
+    def settings(self, widget, x):
+        import settings
+        self.active = False
+        dialog = settings.Settings()
         dialog.connect("destroy", self.close_dialog)
         dialog.show_all()
 
@@ -636,7 +673,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
 
 style_provider = Gtk.CssProvider()
-style_provider.load_from_path(CURRENT_PATH+'/css/style.css')
+style_provider.load_from_path(currpath+'/css/style.css')
 
 Gtk.StyleContext.add_provider_for_screen (
     Gdk.Screen.get_default(), style_provider,
