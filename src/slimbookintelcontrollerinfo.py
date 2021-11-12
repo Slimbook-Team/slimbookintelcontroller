@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-
+import logging
 import os
-import subprocess
 
 import gi
 
@@ -21,18 +20,6 @@ CURRRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 _ = utils.load_translation('slimbookintelcontrollerinfo')
 
-USER_NAME = utils.get_user()
-HOMEDIR = subprocess.getoutput("echo ~" + USER_NAME)
-
-# Adding CSS
-style_provider = Gtk.CssProvider()
-style_provider.load_from_path(CURRRENT_PATH + '/css/style.css')
-
-Gtk.StyleContext.add_provider_for_screen(
-    Gdk.Screen.get_default(), style_provider,
-    Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-)
-
 
 class PreferencesDialog(Gtk.Window):
 
@@ -40,12 +27,11 @@ class PreferencesDialog(Gtk.Window):
 
         Gtk.Window.__init__(self, title='')
 
-        ICON = os.path.join(CURRRENT_PATH + '/images/slimbookintelcontroller.svg')
-
-        try:
-            self.set_icon_from_file(ICON)
-        except Exception:
-            print("Icon not found")
+        icon = os.path.join(os.path.join(CURRRENT_PATH, 'images/slimbookintelcontroller.svg'))
+        if os.path.isfile(icon):
+            self.set_icon_from_file(icon)
+        else:
+            logging.error("Icon not found")
 
         self.set_position(Gtk.WindowPosition.CENTER_ALWAYS)
         self.get_style_context().add_class("bg-color")
@@ -67,7 +53,7 @@ class PreferencesDialog(Gtk.Window):
 
     # COMPONETS
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRRENT_PATH + '/images/logo-sb.png',
+            filename=os.path.join(CURRRENT_PATH, 'images/logo-sb.png'),
             width=200,
             height=100,
             preserve_aspect_ratio=True)
@@ -111,7 +97,7 @@ class PreferencesDialog(Gtk.Window):
         warning.set_name('label')
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRRENT_PATH + '/images/cc.png',
+            filename=os.path.join(CURRRENT_PATH, 'images/cc.png'),
             width=100,
             height=50,
             preserve_aspect_ratio=True)
@@ -119,7 +105,7 @@ class PreferencesDialog(Gtk.Window):
         licencia = Gtk.Image.new_from_pixbuf(pixbuf)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRRENT_PATH + '/images/cross.png',
+            filename=os.path.join(CURRRENT_PATH, 'images/cross.png'),
             width=20,
             height=20,
             preserve_aspect_ratio=True)
@@ -139,7 +125,7 @@ class PreferencesDialog(Gtk.Window):
         enlaces_box.set_halign(Gtk.Align.CENTER)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRRENT_PATH + '/images/twitter.png',
+            filename=os.path.join(CURRRENT_PATH, 'images/twitter.png'),
             width=25,
             height=25,
             preserve_aspect_ratio=True)
@@ -154,7 +140,7 @@ class PreferencesDialog(Gtk.Window):
         enlaces_box.pack_start(twitter, False, False, 0)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRRENT_PATH + '/images/facebook.png',
+            filename=os.path.join(CURRRENT_PATH, 'images/facebook.png'),
             width=25,
             height=25,
             preserve_aspect_ratio=True)
@@ -168,7 +154,7 @@ class PreferencesDialog(Gtk.Window):
         enlaces_box.pack_start(facebook, False, False, 0)
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRRENT_PATH + '/images/insta.png',
+            filename=os.path.join(CURRRENT_PATH, 'images/insta.png'),
             width=25,
             height=25,
             preserve_aspect_ratio=True)
@@ -266,4 +252,3 @@ class PreferencesDialog(Gtk.Window):
         self.close()
         self.hide()
         self.destroy()
-        Gtk.main_quit()
