@@ -14,6 +14,7 @@ if CURRENT_PATH not in sys.path:
     sys.path = [CURRENT_PATH] + sys.path
 
 import utils
+
 import slimbookintelcontrollerinfo as info
 
 gi.require_version('Gtk', '3.0')
@@ -78,8 +79,6 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     exec_indicator = True
 
     def __init__(self):
-
-        self.creafichero()
 
     # WINDOW
 
@@ -309,7 +308,6 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             if subprocess.getstatusoutput("cat /sys/class/thermal/" + thermal_zone + "/type | grep acpitz")[0] == 0:
                 print('Found thermal zone!')
                 cpu_thermal_zone = thermal_zone
-                exit()
 
         if cpu_thermal_zone is not None:
             cpu_temp = subprocess.getstatusoutput(
@@ -342,8 +340,8 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         close.get_style_context().add_class("close")
 
         evnt_close = Gtk.EventBox()
-        evnt_close.set_valign(Gtk.Align.START)
-        evnt_close.set_halign(Gtk.Align.END)
+        evnt_close.set_valign(Gtk.Align.CENTER)
+        evnt_close.set_halign(Gtk.Align.CENTER)
         evnt_close.add(close)
         evnt_close.connect("button_press_event", self.on_btnCerrar_clicked)
 
@@ -368,6 +366,8 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         evnt_settings.connect("button_press_event", self.settings)
 
         hbox_close = Gtk.HBox()
+        hbox_close.set_valign(Gtk.Align.START)
+        hbox_close.set_halign(Gtk.Align.END)
         hbox_close.add(evnt_settings)
         hbox_close.add(evnt_close)
 
@@ -493,7 +493,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         win_grid.attach(grid, 1, 2, 8, 10)
         win_grid.attach(header_img, 1, 0, 8, 8)
-        win_grid.attach(evnt_close, 8, 0, 1, 1)
+        win_grid.attach(hbox_close, 8, 0, 1, 1)
         win_grid.attach(evnt_box, 8, 12, 1, 1)
         win_grid.attach(version_tag, 1, 12, 2, 1)
         win_grid.attach(botonesBox, 1, 12, 8, 1)
@@ -542,7 +542,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
     # CPU Parameters
         try:
-            params = config.get('PROCESSORS', model_cpu).split('/')
+            params = config.get('CONFIGURATION', 'cpu').split('/')
             self.parameters = params
             print('- CPU Parameters: ' + str(self.parameters))
             print("\n.conf data loaded succesfully!\n")
@@ -550,6 +550,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         except Exception:
 
             print('Processor not found in list')
+            self.settings()
             # if entorno_usu.find('es') >= 0:
             #     tutorial_link = 'https://slimbook.es/es/tutoriales/aplicaciones-slimbook/515-slimbook-intel-controller'
             # else:
@@ -583,9 +584,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     def settings(self, widget, x):
         import settings
         self.active = False
-        dialog = settings.Settings()
-        dialog.connect("destroy", self.close_dialog)
-        dialog.show_all()
+        dialog = settings.Dialog()
 
     def on_btnCerrar_clicked(self, widget, x):
         Gtk.main_quit()
@@ -601,77 +600,6 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         print("Variable |" + variable + "| updated, actual value: " + value + "\n")
 
-    # Funcion crear directorio /slimbookintelcontroller y crear fichero de configuracion si no existe ya.
-    def creafichero(self):
-
-        if os.path.isfile(config_file):
-            print('File .conf already exists\n')
-        else:
-            print("File doesn't exist")
-
-            if os.path.exists(HOMEDIR + '/.config/slimbookintelcontroller'):
-                print('Directory already exists')
-                os.system('touch ' + config_file)
-                print('\nCreating file ...')
-
-            else:
-                print("Directory doesen't exist")
-                os.system('mkdir ~/.config/slimbookintelcontroller')
-                os.system('touch ' + config_file)
-                print('Creating file ...')
-
-            with open(config_file, 'w') as conf:
-
-                if self.fichero_conf('configuration') != -1:
-                    print('Se ha escrito el conf.' + str(self.fichero_conf('processors')))
-                    self.fichero_conf('configuration').write(conf)
-                    # self.fichero_conf('processors').write(conf)
-
-                    os.system("cat " + config_file)
-
-                else:
-                    print('El procesador no esta soportado')
-                    os.system('rm ' + config_file)
-
-            print('File created succesfully!\n')
-
-        if os.system("cat " + config_file) != 0:
-            print("Failed creating .conf")
-            os.system('rm ' + config_file)
-
-    # Genera config_object para el .conf
-    def fichero_conf(self, section):
-
-        if section == 'configuration':
-
-            config_object["CONFIGURATION"] = {
-                "mode": "low",
-                "autostart": "off",
-                "show-icon": "off",
-                "cpu": model_cpu
-            }
-
-        elif section == 'processors':
-
-            config_object["PROCESSORS"] = {
-                'i3-10110U': '10@12/15@25/20@30/ 10/15/25/ w',
-                'i3-1005G1': '10@12/15@25/20@30/ 13/15/25/ w',
-
-                'i5-8250U': '10@12/15@20/20@35/ 10/15/25/ w',
-                'i5-8265U': '10@12/15@20/20@35/ 10/15/25/ w',
-                'i5-10210U': '10@12/15@20/20@30/ 10/15/25/ w',
-                'i5-1035G1': '10@12/15@20/20@35/ 13/15/25/ w',
-
-                'i7-7500U': '10@12/15@20/20@35/ 7.5/15/25/ w',
-                'i7-8550U': '10@12/15@25/30@45/ 10/15/25/ w',
-                'i7-8565U': '10@12/15@25/30@45/ 10/15/25/ w',
-                'i7-1065G7': '10@12/15@20/25@45/ 12/15/25/ w',
-                'i7-10510U': '10@12/15@25/30@50/ 10/15/25/ w',
-                'i7-10750H': '15@20/30@45/54@70/ 35/45/54/ w',
-                'i7-1165G7': '10@12/15@25/30@50/ 12/15/28/ w'
-            }
-
-        return config_object
 
 
 style_provider = Gtk.CssProvider()

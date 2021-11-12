@@ -32,10 +32,9 @@ line_suffix = patron.search(CPU).group(3)
 
 MODEL_CPU = version+'-'+number+line_suffix
 
-class Add_processor(Gtk.Dialog):
+class Add_processor_dialog(Gtk.Dialog):
     def __init__(self, parent):
-        super().__init__(title="My Dialog")
-        self.parent = parent
+        super().__init__(title="My Dialog",transient_for=parent)
         self.set_name('dialog')
         self.add_buttons(
             Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
@@ -52,49 +51,42 @@ class Add_processor(Gtk.Dialog):
         self.show_all()
 
 
-class Settings(Gtk.Window):
+class Settings_dialog(Gtk.Dialog):
     FIELDS = {
                 'H': '35@40/40@45/45@54/35/45/54/',
-                'U': '10@12/12@18/15@28/10/15/25/',
+                'U': '10@12/12@18/15@28/10/15/25/'
             }
 
-    print('aaaaaaaaaaaaaaaaaaaaaaaaa '+FIELDS.get(line_suffix))
+
+    def __init__(self, parent):
         
-    # for row, data in enumerate(FIELDS):
-    #     data.get(line_suffix)
-    
-    try:
-        # Array
-        values = config['PROCESSORS'][MODEL_CPU].split('/')
+        if config.has_option('CONFIGURATION', 'cpu-parameters') and config['CONFIGURATION']['cpu-parameters']!= '':
+            values = config['CONFIGURATION']['cpu-parameters'].split('/')
+            print('Loads:  '+str(values)+' from file.')
+        else:
+            try:
+                values = self.FIELDS.get(line_suffix).split('/')
+            except:
+                values = ['0@0', '0@0', '0@0', '0', '0', '0']
+            
+            self.val = '{}/{}/{}/{}/{}/{}/?'.format(values[0],values[1],values[2],values[3],values[4],values[5])
+            print('Creates loads:  '+self.val+'.')
 
-        print('Loads:  '+str(values)+' from file.')
-    except:
-        try:
-            values = FIELDS.get(line_suffix).split('/')
-        except:
-            values = ['0@0', '0@0', '0@0', '0', '0', '0']
-        
-        proc_found = False
-        val = '{}/{}/{}/{}/{}/{}/?'.format(values[0],values[1],values[2],values[3],values[4],values[5])
-        print('Creates loads:  '+val+'.')
-        # 
-    
+        self.lowmode = (values[0].split('@'))
+        self.midmode = (values[1].split('@'))
+        self.highmode = (values[2].split('@'))
 
-    lowmode = (values[0].split('@'))
-    midmode = (values[1].split('@'))
-    highmode = (values[2].split('@'))
 
-    low_default = float(values[3])
-    mid_default = float(values[4])
-    high_default = float(values[5])
+        self.low_default = float(values[3])
+        self.mid_default = float(values[4])
+        self.high_default = float(values[5])
 
-    def __init__(self):
-
+        super().__init__(title="Slimbook Intel Controller Settings", transient_for=parent)
+        self.set_name('dialog')
+        self.add_buttons(
+            Gtk.STOCK_CANCEL, Gtk.ResponseType.CANCEL, Gtk.STOCK_OK, Gtk.ResponseType.OK
+        )
         # WINDOW
-        Gtk.Window.__init__(self, title="Slimbook Intel Controller Settings")
-        self.set_position(Gtk.WindowPosition.CENTER)
-        # self.set_size_request(500, 300)  # anchoxalto
-        self.set_resizable(False)
         self.set_name('settings')
 
         center = Gtk.Align.CENTER
@@ -111,20 +103,20 @@ class Settings(Gtk.Window):
                         column_spacing=20,
                         row_spacing=10)
 
-        self.add(win_grid)
+        self.get_content_area().add(win_grid)
 
         # Mantained TDP Column
 
         label1 = Gtk.Label(label=_('Mantained TDP'))
 
         self.entry1 = _create_gui_element(
-            float(self.lowmode[0]), self.low_default, self.high_default + 10)
+            float(self.lowmode[0]), self.low_default - self.low_default/2, self.high_default + 10)
 
         self.entry2 = _create_gui_element(
-            float(self.midmode[0]), self.low_default, self.high_default + 10)
+            float(self.midmode[0]), self.low_default - self.low_default/2, self.high_default + 10)
 
         self.entry3 = _create_gui_element(
-            float(self.highmode[0]), self.low_default, self.high_default + 10)
+            float(self.highmode[0]), self.low_default - self.low_default/2, self.high_default + 10)
 
         grid.attach(self.entry1, 1, 1, 1, 1)
         grid.attach(self.entry2, 1, 2, 1, 1)
@@ -136,13 +128,13 @@ class Settings(Gtk.Window):
         label2 = Gtk.Label(_('High Power TDP'))
 
         self.entry4 = _create_gui_element(
-            float(self.lowmode[1]), self.low_default, self.high_default + 10)
+            float(self.lowmode[1]), self.low_default - self.low_default/2, self.high_default + 10)
 
         self.entry5 = _create_gui_element(
-            float(self.midmode[1]), self.low_default, self.high_default + 10)
+            float(self.midmode[1]), self.low_default - self.low_default/2, self.high_default + 10)
 
         self.entry6 = _create_gui_element(
-            float(self.highmode[1]), self.low_default, self.high_default + 10)
+            float(self.highmode[1]), self.low_default - self.low_default/2, self.high_default + 10)
 
         grid.attach(self.entry4, 2, 1, 1, 1)
         grid.attach(self.entry5, 2, 2, 1, 1)
@@ -150,7 +142,7 @@ class Settings(Gtk.Window):
         grid.attach(label2, 2, 0, 1, 1)
 
         # Modes Column
-
+        
         low_lbl = Gtk.Label(label=_('Low'), halign=left)
 
         mid_lbl = Gtk.Label(label=_('Medium'), halign=left)
@@ -178,7 +170,7 @@ class Settings(Gtk.Window):
             label=_('Medium: {} watts'.format(self.mid_default)), halign=left)
 
         high_lbl = Gtk.Label(
-            label=_('HIgh: {} watts.'.format(self.high_default)), halign=left)
+            label=_('High: {} watts.'.format(self.high_default)), halign=left)
 
         values_box = Gtk.VBox()
         values_box.add(low_lbl)
@@ -187,73 +179,64 @@ class Settings(Gtk.Window):
 
         win_grid.attach(values_box, 0, 6, 2, 2)
 
-        # Buttons
-        accept_btn = Gtk.Button(label=_('Accept'))
-        accept_btn.connect('clicked', self.accept)
-
-        cancel_btn = Gtk.Button(label=_('Cancel'))
-        cancel_btn.connect('clicked', self.close)
-
         win_grid.attach(grid, 0, 0, 5, 4)
-        win_grid.attach(accept_btn, 4, 7, 1, 1)
-        win_grid.attach(cancel_btn, 3, 7, 1, 1)
 
-        accept_btn.grab_focus()
+        self.show_all()
 
-    def accept(self, button):
-        new_values = '{}@{}/{}@{}/{}@{}/'.format(self.entry1.get_text(),
-                                           self.entry4.get_text(),
-                                           self.entry2.get_text(),
-                                           self.entry5.get_text(),
-                                           self.entry3.get_text(),
-                                           self.entry6.get_text())
+
+class Dialog(Gtk.Window):
+    
+    print(MODEL_CPU)
+    # print(config.items('PROCESSORS'))
+    def __init__(self):
+        Gtk.Window.__init__(self, title="Slimbook Intel Controller")
+        if not config.has_option('PROCESSORS',MODEL_CPU):
+            
+            dialog = Add_processor_dialog(self)
+            response = dialog.run()
+
+            if not response == Gtk.ResponseType.OK:     
+                print("The Cancel button was clicked")
+                exit()
+            dialog.close()
+            dialog.destroy()
+
+        dialog = Settings_dialog(self)
+        dialog.show_all()
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.OK:
+            print("The OK button was clicked")
+            self.accept(dialog)
+            
+        elif response == Gtk.ResponseType.CANCEL:
+            print("The Cancel button was clicked")
+        
+        dialog.close()
+        dialog.destroy()
+
+    def accept(self, dialog):
+        new_values = '{}@{}/{}@{}/{}@{}/  {}/{}/{}/'.format(dialog.entry1.get_text(),
+                                           dialog.entry4.get_text(),
+                                           dialog.entry2.get_text(),
+                                           dialog.entry5.get_text(),
+                                           dialog.entry3.get_text(),
+                                           dialog.entry6.get_text(),
+                                           dialog.low_default, dialog.mid_default, dialog.high_default)
 
         if config.has_option('PROCESSORS',MODEL_CPU):
-            print('Proc added')
-            config.set('CONFIGURATION','cpu', new_values)
+            print('Processor values modified.')
+
+            config.set('CONFIGURATION','cpu-parameters', new_values)
 
         else: 
-            print('Proc not added')
-            config.set('PROCESSORS', MODEL_CPU, new_values)
-            config.set('CONFIGURATION','cpu', self.val)
+            print('Processor added')
+            config.set('PROCESSORS', MODEL_CPU, dialog.val)
+            config.set('CONFIGURATION','cpu-parameters', new_values)
             print(config['PROCESSORS'][MODEL_CPU])
 
         with open(CONFIG_FILE, 'w') as configfile:
                 config.write(configfile)
-
-    def close(self, button=None):
-        Gtk.main_quit()
-
-class main():
-    
-    print(MODEL_CPU)
-    # print(config.items('PROCESSORS'))
-    
-    if config.has_option('PROCESSORS',MODEL_CPU):
-        proc_found = True
-    else:
-        proc_found = False
-
-    def __init__(self):
-        
-        if not self.proc_found:
-            dialog = Add_processor(self)
-            response = dialog.run()
-
-            if response == Gtk.ResponseType.OK:
-                print("The OK button was clicked")
-                self.proc_found = True
-
-            elif response == Gtk.ResponseType.CANCEL:
-                print("The Cancel button was clicked")
-            dialog.destroy()
-
-        if self.proc_found:
-            
-            dialog = Settings()
-            dialog.connect("destroy", Gtk.main_quit)
-            dialog.show_all()
-
 
 def _create_gui_element(value, low, max):
 
@@ -278,6 +261,6 @@ Gtk.StyleContext.add_provider_for_screen(
     Gdk.Screen.get_default(), style_provider,
     Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
 )
-
-main()
-Gtk.main()
+if __name__ == "__main__":
+    Dialog()
+    Gtk.main()

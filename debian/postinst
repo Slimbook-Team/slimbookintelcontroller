@@ -14,4 +14,6 @@ cd intel-undervolt/
 
 chmod +x /usr/lib/systemd/system-sleep/slimbookintelcontroller
 
+python3 /usr/share/slimbookintelcontroller/src/configuration/check_config.py
+
 exit 0

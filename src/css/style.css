@@ -3,15 +3,15 @@ window, dialog{
     background-image: radial-gradient(circle at center, rgb(24, 24, 24) 0%, black 100%);
 }
 
-#settings>grid, #dialog>box{
-    border: 1px red solid;
+#settings>box>grid, #dialog>box{
+    /* border: 1px red solid; */
     padding:20px;
 }
 
-#settings separator {
+/* #settings separator {
     border: 1px red solid;
-}
-#settings>grid>label, #settings>grid>box>label, dialog>box>label {
+} */
+#settings>box>grid>label, #settings>box>grid>box>label, dialog>box>label {
     color: white
 }
 
