@@ -29,7 +29,7 @@ def get_languages():
     languages = ['en']
     try:
         user_environ = locale.getlocale()[0]
-        for lang in ["en", "es"]:
+        for lang in ["en", "es", "it"]:
             if user_environ.find(lang) >= 0:
                 languages = [lang]
                 break
