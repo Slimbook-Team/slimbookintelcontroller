@@ -345,9 +345,6 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         evnt_close.add(close)
         evnt_close.connect("button_press_event", self.on_btnCerrar_clicked)
 
-        settings = Gtk.Button(label = 'Settings')
-        info = Gtk.Button(label = 'Info')
-
         menu = Gtk.Menu()
         menu.append(Gtk.MenuItem(label="lp"))
         menu.append(Gtk.MenuItem(label="pl"))
@@ -584,7 +581,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     def settings(self, widget, x):
         import settings
         self.active = False
-        dialog = settings.Dialog()
+        dialog = settings.DialogWin()
 
     def on_btnCerrar_clicked(self, widget, x):
         Gtk.main_quit()

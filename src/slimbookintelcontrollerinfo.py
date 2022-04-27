@@ -209,7 +209,7 @@ class PreferencesDialog(Gtk.Window):
         label77.set_halign(Gtk.Align.CENTER)
         link_box2.add(label77)
 
-        label77 = Gtk.LinkButton(uri="https://github.com/slimbook/slimbookintelcontroller/tree/main/src/locale",
+        label77 = Gtk.LinkButton(uri="https://github.com/slimbook/slimbookintelcontroller/tree/developing/src/translations",
                                  label=_('Help us with translations!'))
         label77.set_halign(Gtk.Align.CENTER)
         link_box2.add(label77)
@@ -266,4 +266,3 @@ class PreferencesDialog(Gtk.Window):
         self.close()
         self.hide()
         self.destroy()
-        Gtk.main_quit()
