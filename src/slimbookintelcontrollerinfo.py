@@ -3,18 +3,13 @@
 
 import os
 import subprocess
-
-import gi
-
 import utils
-
+import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
-
 from gi.repository import Gtk, Gdk, GdkPixbuf
 
 # IDIOMAS ----------------------------------------------------------------
-
 # pygettext -d slimbookamdcontrollercopy slimbookamdcontrollercopy.py
 
 CURRRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -33,15 +28,11 @@ Gtk.StyleContext.add_provider_for_screen(
     Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
 )
 
-
 class PreferencesDialog(Gtk.Window):
 
     def __init__(self):
-
         Gtk.Window.__init__(self, title='')
-
         ICON = os.path.join(CURRRENT_PATH + '/images/slimbookintelcontroller.svg')
-
         try:
             self.set_icon_from_file(ICON)
         except Exception:

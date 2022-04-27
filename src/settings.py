@@ -2,7 +2,6 @@ from configparser import ConfigParser
 
 import gi
 import os
-import re
 import utils
 
 gi.require_version('Gtk', '3.0')
@@ -16,26 +15,20 @@ HOMEDIR = os.path.expanduser('~')
 
 CONFIG_FILE = '{}/.config/slimbookintelcontroller/slimbookintelcontroller.conf'.format(
     HOMEDIR)
-print(CONFIG_FILE)
-PROCESSORS_FILE = '{}/processors/available'.format(CURRENT_PATH)
 
 config = ConfigParser()
 config.read(CONFIG_FILE)
 
 _ = utils.load_translation('slimbookintelcontroller')
 
-CPU = utils.get_cpu_info('name')
+cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info('name')
 
-patron = re.compile('(\w\d)[-]([0-9]{4,5})(\w*)[ ]')
-version = patron.search(CPU).group(1)
-number = patron.search(CPU).group(2)
-line_suffix = patron.search(CPU).group(3)
+MODEL_CPU = version + '-' + number + line_suffix
 
-MODEL_CPU = version+'-'+number+line_suffix
 
 class WarnDialog(Gtk.Dialog):
     def __init__(self, parent, label):
-        super().__init__(title=_("Warning"),transient_for=parent)
+        super().__init__(title=_("Warning"), transient_for=parent)
         self.set_name('warn')
         self.add_buttons(
             Gtk.STOCK_OK, Gtk.ResponseType.OK
@@ -51,55 +44,45 @@ class WarnDialog(Gtk.Dialog):
 
 class SettingsDialog(Gtk.Dialog):
     FIELDS = {
-                'H': '35@40/40@45/45@54/ 35/45 w',
-                'U': '10@12/12@18/15@28/ 10/15/25 w'
-            }
-
+        'H': '35@40/40@45/45@54/ 35/45 w',
+        'U': '10@12/12@18/15@28/ 10/15/25 w'
+    }
 
     def __init__(self, parent):
-        
-        if config.has_option('CONFIGURATION', 'cpu-parameters') and config['CONFIGURATION']['cpu-parameters']!= '':
-            values = config['CONFIGURATION']['cpu-parameters'].split('/')
-            print('Loads:  '+str(values)+' from file.')
+        if config.has_option('CONFIGURATION', 'cpu-parameters') and config['CONFIGURATION']['cpu-parameters'] != '':
+            values = config['CONFIGURATION']['cpu-parameters']
+            print('Loads:  ' + str(values) + ' from file.')
         else:
+            values = self.FIELDS.get(line_suffix) if self.FIELDS.get(
+                line_suffix) else ['0@0', '0@0', '0@0', '0', '0', '0']
+
+        values = values.split(' ')
+        values = list(filter(str.strip, values))
+
+        for count, value in enumerate(values):
+            values[count] = value.split('/')
             try:
-                print(line_suffix)
-                values = self.FIELDS.get(line_suffix).split('/')
+                values[count].pop(values[count].index(''))
             except:
-                values = ['0@0', '0@0', '0@0', '0', '0', '0']
-            
-        
-        length = len(values)-1
-        values[length] = values[length][:values[length].find('w')]
-        self.val = '{}/{}/{}/'.format(values[0],values[1],values[2])
-        
-        try:
-            self.val = self.val+ '{}/{}/{} w'.format(values[3], values[4],values[5][:values[5].find('w')])
-            self.low_default = float(self.val[3])
-            self.mid_default = float(self.val[4])
-            self.high_default = float(self.val[5])
-            
-        except Exception as e:
-            print(e)
-            self.val = self.val+ '{}/{} w'.format(values[3],values[4][:values[4].find('w')])
-            self.low_default = float(self.val[3])
-            self.mid_default = float(self.val[4])
-            self.high_default = float(self.val[4])
-                
-        
-        print('CPU-Parameters:  '+self.val+'.')
+                pass
 
-        self.lowmode = (values[0].split('@'))
-        self.midmode = (values[1].split('@'))
-        self.highmode = (values[2].split('@'))
+        values, default_values = values[0], values[1]
+        # print(values, default_values)
+        if len(default_values) == 2:
+            self.low_default = float(default_values[0])
+            self.mid_default = float(default_values[1])
+            self.high_default = float(default_values[1])
 
-        
-        
-        try:
-            self.high_default = float(values[4])
-        except:
-            self.high_default = float(values[3])
-            print('Not found 4th value')
+        elif len(default_values) == 3:
+            self.low_default = float(default_values[0])
+            self.mid_default = float(default_values[1])
+            self.high_default = float(default_values[2])
+
+        self.values_str = '/{}/ {} w'.format(('/').join(values), ('/').join(default_values))
+
+        lowmode = (values[0].split('@'))
+        midmode = (values[1].split('@'))
+        highmode = (values[2].split('@'))
 
         super().__init__(title="Slimbook Intel Controller Settings", transient_for=parent)
         self.set_name('dialog')
@@ -108,7 +91,6 @@ class SettingsDialog(Gtk.Dialog):
         )
         # WINDOW
         self.set_name('settings')
-
         center = Gtk.Align.CENTER
         left = Gtk.Align.START
         right = Gtk.Align.END
@@ -127,21 +109,19 @@ class SettingsDialog(Gtk.Dialog):
 
         # Mantained TDP Column
         if self.low_default < 20:
-            min = self.low_default - self.low_default/2 
+            min = self.low_default - self.low_default / 2
         else:
-            min = self.low_default - 3*(self.low_default/4)
-        max = self.high_default*2
+            min = self.low_default - 3 * (self.low_default / 4)
+        max = self.high_default * 2
 
         label1 = Gtk.Label(label=_('Mantained TDP'))
 
         self.entry1 = _create_gui_element(
-            float(self.lowmode[0]), min, max)
-        
+            float(lowmode[0]), min, max)
         self.entry2 = _create_gui_element(
-            float(self.midmode[0]), min, max)
-        
+            float(midmode[0]), min, max)
         self.entry3 = _create_gui_element(
-            float(self.highmode[0]), min, max)
+            float(highmode[0]), min, max)
 
         grid.attach(self.entry1, 1, 1, 1, 1)
         grid.attach(self.entry2, 1, 2, 1, 1)
@@ -150,24 +130,21 @@ class SettingsDialog(Gtk.Dialog):
 
         # High Power TDP Column
 
-        label2 = Gtk.Label(_('High Power TDP'))
+        label2 = Gtk.Label(label=_('High Power TDP'))
 
         self.entry4 = _create_gui_element(
-            float(self.lowmode[1]), min, max)
-        
+            float(lowmode[1]), min, max)
         self.entry5 = _create_gui_element(
-            float(self.midmode[1]), min, max)
-        
+            float(midmode[1]), min, max)
         self.entry6 = _create_gui_element(
-            float(self.highmode[1]), min, max)
-        
+            float(highmode[1]), min, max)
+
         grid.attach(self.entry4, 2, 1, 1, 1)
         grid.attach(self.entry5, 2, 2, 1, 1)
         grid.attach(self.entry6, 2, 3, 1, 1)
         grid.attach(label2, 2, 0, 1, 1)
 
         # Modes Column
-        
         low_lbl = Gtk.Label(label=_('Low'), halign=left)
 
         mid_lbl = Gtk.Label(label=_('Medium'), halign=left)
@@ -183,7 +160,6 @@ class SettingsDialog(Gtk.Dialog):
         win_grid.attach(separator, 0, 4, 5, 1)
 
         # Recommended Values
-
         recommended_lbl = Gtk.Label(
             label=_('Recommended values:'), halign=left)
 
@@ -211,23 +187,17 @@ class SettingsDialog(Gtk.Dialog):
 
 
 class DialogWin(Gtk.Window):
-    
-    print(MODEL_CPU)
     def __init__(self):
         Gtk.Window.__init__(self, title="Slimbook Intel Controller")
-        
-        if CPU.find('Intel') != -1:
-            
-            if not config.has_option('PROCESSORS',MODEL_CPU):
-                
-                label = Gtk.Label(label=_(
-                    "Your processor is not supported yet. Do you want to add {} to the list?\n"+
-                    "If this is the case, you should go to the Intel page and get information about your TDP values.").format(MODEL_CPU))
-                
-                dialog = WarnDialog(self, label)
-                
-                response = dialog.run()
 
+        if cpu.find('Intel') != -1:
+            if not config.has_option('PROCESSORS', MODEL_CPU):
+                label = Gtk.Label(label=_(
+                    "Your processor is not supported yet. Do you want to add {} to the list?\n" +
+                    "If this is the case, you should go to the Intel page and get information about your TDP values.").format(MODEL_CPU))
+
+                dialog = WarnDialog(self, label)
+                response = dialog.run()
                 dialog.close()
                 dialog.destroy()
 
@@ -239,7 +209,7 @@ class DialogWin(Gtk.Window):
                 self.accept(dialog)
                 dialog.close()
                 dialog.destroy()
-                
+
             elif response == Gtk.ResponseType.CANCEL:
                 dialog.close()
                 dialog.destroy()
@@ -248,50 +218,44 @@ class DialogWin(Gtk.Window):
             dialog = WarnDialog(self, label)
             response = dialog.run()
 
-        dialog.close()
-        dialog.destroy()
-
     def accept(self, dialog):
         new_values = '{}@{}/{}@{}/{}@{}/  {}/{}/{}/'.format(
-                                           dialog.entry1.get_text(),
-                                           dialog.entry4.get_text(),
-                                           dialog.entry2.get_text(),
-                                           dialog.entry5.get_text(),
-                                           dialog.entry3.get_text(),
-                                           dialog.entry6.get_text(),
-                                           dialog.low_default, dialog.mid_default, dialog.high_default)
+            dialog.entry1.get_text(),
+            dialog.entry4.get_text(),
+            dialog.entry2.get_text(),
+            dialog.entry5.get_text(),
+            dialog.entry3.get_text(),
+            dialog.entry6.get_text(),
+            int(dialog.low_default), int(dialog.mid_default), int(dialog.high_default))
 
         if config.has_option('PROCESSORS', MODEL_CPU):
             print('Processor values modified.')
-            config.set('CONFIGURATION','cpu-parameters', new_values)
-
-        else: 
+            config.set('CONFIGURATION', 'cpu-parameters', new_values)
+        else:
             print('Processor added')
-            config.set('PROCESSORS', MODEL_CPU, dialog.val)
-            config.set('CONFIGURATION','cpu-parameters', new_values)
+            config.set('PROCESSORS', MODEL_CPU, dialog.values_str)
+            config.set('CONFIGURATION', 'cpu-parameters', new_values)
             print(config['PROCESSORS'][MODEL_CPU])
 
         with open(CONFIG_FILE, 'w') as configfile:
-                config.write(configfile)
+            config.write(configfile)
+
 
 def _create_gui_element(value, low, max):
-
     spin_button = Gtk.SpinButton()
     spin_button.set_adjustment(Gtk.Adjustment(
         value=value,
         lower=low,
         upper=max,
-        step_incr=1,
-        page_incr=10,
+        step_increment=1,
+        page_increment=10,
     ))
-
     spin_button.set_numeric(True)
-
     return spin_button
 
 
 style_provider = Gtk.CssProvider()
-style_provider.load_from_path(CURRENT_PATH+'/css/style.css')
+style_provider.load_from_path(CURRENT_PATH + '/css/style.css')
 
 Gtk.StyleContext.add_provider_for_screen(
     Gdk.Screen.get_default(), style_provider,
