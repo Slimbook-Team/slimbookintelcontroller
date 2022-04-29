@@ -485,13 +485,11 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             print("\n.conf data loaded succesfully!\n")
 
         except Exception:
-
             print('Processor not found in list')
             self.settings()
             self.exec_indicator = False
 
     def reboot_indicator(self):
-
         print('\nProcess PID')
         indicator = subprocess.getoutput('pgrep -f slimbookintelcontrollerindicator')
         print(indicator)
@@ -516,6 +514,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         import settings
         self.active = False
         settings.DialogWin()
+        config.read(config_file)
 
     def on_btnCerrar_clicked(self, widget=None, x=None):
         self.exit()
