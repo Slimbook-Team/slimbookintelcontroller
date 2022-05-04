@@ -34,7 +34,8 @@ config.read(config_file)
 
 _ = utils.load_translation("slimbookintelcontroller")
 
-cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info("name")
+cpuinfo = utils.get_cpu_info("name")
+cpu, model_cpu, version, number, line_suffix = cpuinfo if cpuinfo else exit()
 print(cpu)
 
 print(

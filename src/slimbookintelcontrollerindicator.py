@@ -41,7 +41,8 @@ pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
 
 _ = utils.load_translation("slimbookintelcontrollerindicator")
 
-cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info("name")
+cpuinfo = utils.get_cpu_info("name")
+cpu, model_cpu, version, number, line_suffix = cpuinfo if cpuinfo else exit()
 
 
 class Indicator(object):

@@ -76,7 +76,7 @@ def get_cpu_info(var="info"):
             .split(":")[1]
             .strip()
         )
-        if cpu.find("Intel"):
+        if cpu.find("Intel") != -1:
             patron = re.compile(r"[ ](\w\d)[-]([0-9]{4,5})(\w*)")
             version = patron.search(cpu).group(1)
             number = patron.search(cpu).group(2)
