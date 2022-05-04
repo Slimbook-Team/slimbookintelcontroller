@@ -25,7 +25,6 @@ cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info('name')
 
 MODEL_CPU = version + '-' + number + line_suffix
 
-
 class WarnDialog(Gtk.Dialog):
     def __init__(self, parent, label):
         super().__init__(title=_("Warning"), transient_for=parent)
@@ -204,6 +203,7 @@ class DialogWin(Gtk.Window):
             dialog = SettingsDialog(self)
             dialog.show_all()
             response = dialog.run()
+            config.read(CONFIG_FILE)
 
             if response == Gtk.ResponseType.OK:
                 self.accept(dialog)

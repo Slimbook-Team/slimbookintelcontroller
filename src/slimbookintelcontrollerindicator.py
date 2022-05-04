@@ -9,13 +9,14 @@ import subprocess
 import sys
 import utils
 import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
-gi.require_version('AyatanaAppIndicator3', '0.1')
+
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+gi.require_version("AyatanaAppIndicator3", "0.1")
 from gi.repository import AyatanaAppIndicator3 as AppIndicator3
 from gi.repository import Gtk, GdkPixbuf
 
-srcpath = '/usr/share/slimbookintelcontroller/src'
+srcpath = "/usr/share/slimbookintelcontroller/src"
 sys.path.insert(1, srcpath)
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -24,38 +25,42 @@ USER_NAME = utils.get_user()
 
 HOMEDIR = subprocess.getoutput("echo ~" + USER_NAME)
 
-IMAGESPATH = os.path.join(CURRENT_PATH, 'images')
+IMAGESPATH = os.path.join(CURRENT_PATH, "images")
 
-config_file = os.path.join(HOMEDIR, '.config/slimbookintelcontroller/slimbookintelcontroller.conf')
+config_file = os.path.join(
+    HOMEDIR, ".config/slimbookintelcontroller/slimbookintelcontroller.conf"
+)
 
 config_object = ConfigParser()
 config = ConfigParser()
 config.read(config_file)
 
 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-    filename='{}/images/slimbookintelcontroller_header.png'.format(CURRENT_PATH),
+    filename="{}/images/slimbookintelcontroller_header.png".format(CURRENT_PATH),
     width=200,
     height=150,
-    preserve_aspect_ratio=True)
+    preserve_aspect_ratio=True,
+)
 
-_ = utils.load_translation('slimbookintelcontrollerindicator')
+_ = utils.load_translation("slimbookintelcontrollerindicator")
 
-cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info('name')
+cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info("name")
 
 # Menu
 
 
 class Indicator(object):
     mode = "none"
-    parameters = ('', '', '')
+    parameters = ("", "", "")
 
     def __init__(self):
-        self.app = 'show_proc'
-        iconpath = '{}/images/'.format(CURRENT_PATH)
+        self.app = "show_proc"
+        iconpath = "{}/images/".format(CURRENT_PATH)
         self.testindicator = AppIndicator3.Indicator.new(
-            self.app, iconpath, AppIndicator3.IndicatorCategory.OTHER)
+            self.app, iconpath, AppIndicator3.IndicatorCategory.OTHER
+        )
 
-        self.testindicator.set_icon_theme_path(CURRENT_PATH + '/images/')
+        self.testindicator.set_icon_theme_path(CURRENT_PATH + "/images/")
         self.testindicator.set_menu(self.create_menu())
         self.inicio()
 
@@ -64,39 +69,45 @@ class Indicator(object):
         menu = Gtk.Menu()
 
         IMAGES = {
-            'low': IMAGESPATH + '/{}'.format('intel-green.png'),
-            'medium': IMAGESPATH + '/{}'.format('intel-blue.png'),
-            'high': IMAGESPATH + '/{}'.format('intel-red.png')
+            "low": IMAGESPATH + "/{}".format("intel-green.png"),
+            "medium": IMAGESPATH + "/{}".format("intel-blue.png"),
+            "high": IMAGESPATH + "/{}".format("intel-red.png"),
         }
 
         low_mode_icon = Gtk.Image()
-        low_mode_icon.set_from_file(IMAGES.get('low'))
+        low_mode_icon.set_from_file(IMAGES.get("low"))
 
         medium_mode_icon = Gtk.Image()
-        medium_mode_icon.set_from_file(IMAGES.get('medium'))
+        medium_mode_icon.set_from_file(IMAGES.get("medium"))
 
         high_mode_icon = Gtk.Image()
-        high_mode_icon.set_from_file(IMAGES.get('high'))
+        high_mode_icon.set_from_file(IMAGES.get("high"))
 
-        low_mode_item = Gtk.ImageMenuItem(label=_('Medium performance'), image=low_mode_icon)
-        low_mode_item.connect('activate', self.lowperformance)
+        low_mode_item = Gtk.ImageMenuItem(
+            label=_("Medium performance"), image=low_mode_icon
+        )
+        low_mode_item.connect("activate", self.lowperformance)
         low_mode_item.set_always_show_image(True)
 
-        medium_mode_item = Gtk.ImageMenuItem(label=_('Medium performance'), image=medium_mode_icon)
-        medium_mode_item.connect('activate', self.mediumperformance)
+        medium_mode_item = Gtk.ImageMenuItem(
+            label=_("Medium performance"), image=medium_mode_icon
+        )
+        medium_mode_item.connect("activate", self.mediumperformance)
         medium_mode_item.set_always_show_image(True)
 
-        high_mode_item = Gtk.ImageMenuItem(label=_('High performance'), image=high_mode_icon)
-        high_mode_item.connect('activate', self.highperformance)
+        high_mode_item = Gtk.ImageMenuItem(
+            label=_("High performance"), image=high_mode_icon
+        )
+        high_mode_item.connect("activate", self.highperformance)
         high_mode_item.set_always_show_image(True)
 
-        preferences_item = Gtk.MenuItem(label=_('Preferences'))
-        preferences_item.connect('activate', self.openWindow)
+        preferences_item = Gtk.MenuItem(label=_("Preferences"))
+        preferences_item.connect("activate", self.openWindow)
 
         separator_item = Gtk.SeparatorMenuItem()
 
-        item_quit = Gtk.MenuItem(label=_('Exit'))
-        item_quit.connect('activate', self.exit)
+        item_quit = Gtk.MenuItem(label=_("Exit"))
+        item_quit.connect("activate", self.exit)
 
         menu.append(low_mode_item)
         menu.append(medium_mode_item)
@@ -121,20 +132,28 @@ class Indicator(object):
         config.read(config_file)
 
         INDICATOR = {
-            'on': AppIndicator3.IndicatorStatus.ACTIVE,
-            'off': AppIndicator3.IndicatorStatus.PASSIVE
+            "on": AppIndicator3.IndicatorStatus.ACTIVE,
+            "off": AppIndicator3.IndicatorStatus.PASSIVE,
         }
-        option = config.get('CONFIGURATION', 'show-icon') if config.has_option('CONFIGURATION', 'show-icon') else None
+        option = (
+            config.get("CONFIGURATION", "show-icon")
+            if config.has_option("CONFIGURATION", "show-icon")
+            else None
+        )
         self.testindicator.set_status(INDICATOR[option])
-        params = config.get('PROCESSORS', model_cpu) if config.has_option('PROCESSORS', model_cpu) else None
+        params = (
+            config.get("PROCESSORS", model_cpu)
+            if config.has_option("PROCESSORS", model_cpu)
+            else None
+        )
 
         if params:
-            print('CPU Parameters: ' + str(params))
-            values = list(filter(str.strip, params.split(' ')))
+            print("CPU Parameters: " + str(params))
+            values = list(filter(str.strip, params.split(" ")))
             for count, value in enumerate(values):
-                values[count] = value.split('/')
+                values[count] = value.split("/")
                 try:
-                    values[count].pop(values[count].index(''))
+                    values[count].pop(values[count].index(""))
                 except:
                     pass
 
@@ -143,7 +162,11 @@ class Indicator(object):
 
             print("\nData loaded from .conf\n")
 
-            mode = config.get('CONFIGURATION', 'mode') if config.has_option('CONFIGURATION', 'mode') else None
+            mode = (
+                config.get("CONFIGURATION", "mode")
+                if config.has_option("CONFIGURATION", "mode")
+                else None
+            )
             MODES = {
                 "low": self.lowperformance,
                 "medium": self.mediumperformance,
@@ -153,42 +176,46 @@ class Indicator(object):
                 MODES.get(mode)()
 
         else:
-            print("\nProcessor parameters not defined in conf, open Preferences Window to configure.\n")
+            print(
+                "\nProcessor parameters not defined in conf, open Preferences Window to configure.\n"
+            )
 
     def update_config_file(self, variable, value):
-        config.set('CONFIGURATION', str(variable), str(value))
-        with open(config_file, 'w') as configfile:
+        config.set("CONFIGURATION", str(variable), str(value))
+        with open(config_file, "w") as configfile:
             config.write(configfile)
         print("Variable '{}' updated, actual value: {}\n".format(variable, value))
 
     def lowperformance(self, widget=None):
         mode = "low"
-        values = self.parameters[0].split('@')
-        self.testindicator.set_icon_full('intel-green', 'Low mode')
+        values = self.parameters[0].split("@")
+        self.testindicator.set_icon_full("intel-green", "Low mode")
         print('Updating "{}" values: {} {}'.format(mode, values[0], values[1]))
         self.update_config_file("mode", mode)
-        os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
+        os.system("pkexec /usr/bin/slimbookintelcontroller-pkexec")
 
     def mediumperformance(self, widget=None):
         mode = "medium"
-        values = self.parameters[1].split('@')
-        self.testindicator.set_icon_full('intel-blue', 'Medium mode')
+        values = self.parameters[1].split("@")
+        self.testindicator.set_icon_full("intel-blue", "Medium mode")
         print('Updating "{}" values: {} {}'.format(mode, values[0], values[1]))
         self.update_config_file("mode", mode)
-        os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
+        os.system("pkexec /usr/bin/slimbookintelcontroller-pkexec")
 
     def highperformance(self, widget=None):
         mode = "high"
-        values = self.parameters[2].split('@')
-        self.testindicator.set_icon_full('intel-red', 'High mode')
+        values = self.parameters[2].split("@")
+        self.testindicator.set_icon_full("intel-red", "High mode")
         print('Updating "{}" values: {} {}'.format(mode, values[0], values[1]))
         self.update_config_file("mode", mode)
-        os.system('pkexec /usr/bin/slimbookintelcontroller-pkexec')
+        os.system("pkexec /usr/bin/slimbookintelcontroller-pkexec")
 
 
-exit_code, msg = subprocess.getstatusoutput('mokutil --sb-state | grep -i "SecureBoot disabled"')
+exit_code, msg = subprocess.getstatusoutput(
+    'mokutil --sb-state | grep -i "SecureBoot disabled"'
+)
 if not exit_code == 0:
-    print('Disable Secureboot, please.')
+    print("Disable Secureboot, please.")
     sys.exit(1)
 
 Indicator()
