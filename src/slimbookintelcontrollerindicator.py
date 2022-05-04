@@ -20,11 +20,8 @@ srcpath = "/usr/share/slimbookintelcontroller/src"
 sys.path.insert(1, srcpath)
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-
 USER_NAME = utils.get_user()
-
 HOMEDIR = subprocess.getoutput("echo ~" + USER_NAME)
-
 IMAGESPATH = os.path.join(CURRENT_PATH, "images")
 
 config_file = os.path.join(
@@ -45,8 +42,6 @@ pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
 _ = utils.load_translation("slimbookintelcontrollerindicator")
 
 cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info("name")
-
-# Menu
 
 
 class Indicator(object):

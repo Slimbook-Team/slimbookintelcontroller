@@ -76,14 +76,15 @@ def get_cpu_info(var="info"):
             .split(":")[1]
             .strip()
         )
-
-        patron = re.compile(r"[ ](\w\d)[-]([0-9]{4,5})(\w*)")
-        version = patron.search(cpu).group(1)
-        number = patron.search(cpu).group(2)
-        line_suffix = patron.search(cpu).group(3)
-        model_cpu = version + "-" + number + line_suffix
-
-        return cpu, model_cpu, version, number, line_suffix
+        if cpu.find("Intel"):
+            patron = re.compile(r"[ ](\w\d)[-]([0-9]{4,5})(\w*)")
+            version = patron.search(cpu).group(1)
+            number = patron.search(cpu).group(2)
+            line_suffix = patron.search(cpu).group(3)
+            model_cpu = version + "-" + number + line_suffix
+            return cpu, model_cpu, version, number, line_suffix
+        else:
+            return None
 
     if var == "cores":
         return subprocess.getoutput("nproc")

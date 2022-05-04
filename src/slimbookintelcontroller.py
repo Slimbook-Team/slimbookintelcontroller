@@ -15,38 +15,27 @@ from gi.repository import Gdk, Gtk, GdkPixbuf, GLib
 
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 if CURRENT_PATH not in sys.path:
-    sys.path = [CURRENT_PATH] + sys.path
-
-currpath = os.path.dirname(os.path.realpath(__file__))
-srcpath = "/usr/share/slimbookintelcontroller/src"
-sys.path.insert(1, currpath)
+    sys.path.insert(1, CURRENT_PATH)
 
 USER_NAME = utils.get_user()
 HOMEDIR = os.path.expanduser("~".format(USER_NAME))
-
-config_object = ConfigParser()
-config_file = "{}/.config/slimbookintelcontroller/slimbookintelcontroller.conf".format(
-    HOMEDIR
-)
-processors_file = currpath + "/processors/available"
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
 AUTOSTART_DESKTOP = os.path.expanduser(
     "{}/.config/autostart/slimbookintelcontroller-autostart.desktop".format(HOMEDIR)
 )
 
-# LANGUAGES ----------------------------------------------------------------
-# CMD(Generate .pot):  pygettext -d slimbookintelcontrollercopy slimbookintelcontrollercopy.py
-# CMD(Generate .mo a partir de .po):  msgfmt -o slimbookintelcontrollercopy.po slimbookintelcontrollercopy.mo
+config_object = ConfigParser()
+config_file = "{}/.config/slimbookintelcontroller/slimbookintelcontroller.conf".format(
+    HOMEDIR
+)
+config = ConfigParser()
+config.read(config_file)
 
 _ = utils.load_translation("slimbookintelcontroller")
 
 cpu, model_cpu, version, number, line_suffix = utils.get_cpu_info("name")
 print(cpu)
-
-config = ConfigParser()
-config.read(config_file)
 
 print(
     "CPU | Model: '{}' | Version: {}| CPU Series: {} | CPU Line Suffix: {}.".format(
@@ -56,7 +45,6 @@ print(
 
 
 class SlimbookINTEL(Gtk.ApplicationWindow):
-
     modo_actual = ""
     current_indicator = ""
     autostart_actual = ""
@@ -131,6 +119,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
     def on_btnAceptar_clicked(self, widget):
         # Check secureboot
+
         exit_code, msg = subprocess.getstatusoutput(
             'mokutil --sb-state | grep -i "SecureBoot disabled"'
         )
@@ -168,7 +157,6 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
     def dialog(self, title, message, link=None):
         dialog = Gtk.MessageDialog(
-            # transient_for=self,
             flags=0,
             message_type=Gtk.MessageType.WARNING,
             buttons=Gtk.ButtonsType.CLOSE,
@@ -205,14 +193,12 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     def init_gui(self):  # ---> UNFINISHED
         config.read(config_file)
         win_grid = Gtk.Grid(column_homogeneous=True, column_spacing=0, row_spacing=10)
-
         grid = Gtk.Grid(
             column_homogeneous=True,
             # row_homogeneous=True,
             column_spacing=0,
             row_spacing=25,
         )
-
         self.add(win_grid)
 
         # CONTENT --------------------------------------------------------------------------------
@@ -255,7 +241,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         # Processor
         hbox_cpu = Gtk.HBox()
-        cpu_name = Gtk.Label(label=cpu[cpu.find(":") + 1 :])
+        cpu_name = Gtk.Label(label=cpu)
         cpu_name.set_halign(Gtk.Align.CENTER)
         hbox_cpu.set_name("cpu_info")
 
@@ -326,7 +312,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         menu.append(Gtk.MenuItem(label="pl"))
 
         pixbuf1 = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=currpath + "/images/settings.png",
+            filename=CURRENT_PATH + "/images/settings.png",
             width=20,
             height=20,
             preserve_aspect_ratio=True,
@@ -439,28 +425,22 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         version_parser = ConfigParser()
         version_parser.read("/usr/share/applications/slimbookintelcontroller.desktop")
-
         try:
             version = version_parser.get("Desktop Entry", "Version")
         except Exception:
             version = "Unknown"
 
         version_tag.set_markup('<span font="10">Version ' + version + "</span>")
-
         version_tag.set_justify(Gtk.Justification.CENTER)
 
         # GRID ATTACH ----------------------------------------------------------------------------
 
         grid.attach(label1, 1, 3, 3, 1)
         grid.attach(label2, 1, 4, 3, 1)
-
         grid.attach(self.switch1, 6, 3, 3, 1)
         grid.attach(self.switch2, 6, 4, 3, 1)
-
         grid.attach(hbox_cpu, 0, 5, 10, 1)
-
         grid.attach(modos, 0, 6, 10, 1)
-
         grid.attach(hbox_radios, 1, 7, 8, 1)
 
         # WIN GRID ATTACH ------------------------------------------------------------------------
@@ -523,7 +503,12 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         except Exception:
             print("Processor not found in list")
             self.settings()
-            self.exec_indicator = False
+            try:
+                config.read(config_file)
+                params = config.get("PROCESSORS", model_cpu).split("/")
+                self.parameters = params
+            except:
+                self.exec_indicator = False
 
     def reboot_indicator(self):
         print("\nProcess PID")
@@ -553,7 +538,6 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         self.active = False
         settings.DialogWin()
-        config.read(config_file)
 
     def on_btnCerrar_clicked(self, widget=None, x=None):
         self.exit()

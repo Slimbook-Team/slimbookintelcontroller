@@ -45,11 +45,8 @@ class PreferencesDialog(Gtk.Window):
         self.set_name("info_win")
 
         win_grid = Gtk.Grid(column_homogeneous=True, column_spacing=0, row_spacing=0)
-
         info_grid = Gtk.Grid(column_homogeneous=True, column_spacing=0, row_spacing=20)
-
         info_grid.set_name("info_grid")
-
         self.add(win_grid)
 
         # COMPONETS
@@ -93,7 +90,6 @@ class PreferencesDialog(Gtk.Window):
         info2.set_name("label")
 
         info3 = Gtk.Label()
-
         info3.set_markup(
             "<span><b>{}</b>{}</span>".format(
                 _("Note: "),
