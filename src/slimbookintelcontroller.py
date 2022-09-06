@@ -1,70 +1,112 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-from configparser import ConfigParser
-import slimbookintelcontrollerinfo as info
-import utils
+import logging
 import os
 import sys
+import gi
 import math
 import subprocess
-import gi
+import re  # Busca patrones expresiones regulares
+
+# We want load first current location
+CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
+if CURRENT_PATH not in sys.path:
+    sys.path = [CURRENT_PATH] + sys.path
+
+import utils
+import slimbookintelcontrollerinfo as info
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
+
+from configparser import ConfigParser
 from gi.repository import Gdk, Gtk, GdkPixbuf, GLib
 
-CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
-if CURRENT_PATH not in sys.path:
-    sys.path.insert(1, CURRENT_PATH)
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
+
+std_handler = logging.StreamHandler(sys.stdout)
+std_handler.setLevel(logging.DEBUG)
+std_formatter = logging.Formatter("%(message)s")
+std_handler.setFormatter(std_formatter)
+
+file_handler = None
+try:
+    file_handler = logging.FileHandler("/var/slimbookintelcontroller.log")
+except PermissionError:
+    logger.critical(
+        "Cannot open log file /var/slimbookintelcontroller.log, using /tmp/slimbookintelcontroller.log"
+    )
+    file_handler = logging.FileHandler("/tmp/slimbookintelcontroller.log")
+if file_handler:
+    file_handler.setLevel(logging.ERROR)
+    file_formatter = logging.Formatter(
+        "%(asctime)s - %(funcName)s:%(lineno)d - %(levelname)s - %(message)s"
+    )
+    file_handler.setFormatter(file_formatter)
+logger.addHandler(std_handler)
+
+logger.debug("Gurrent path: {}".format(CURRENT_PATH))
 
 USER_NAME = utils.get_user()
-HOMEDIR = os.path.expanduser("~".format(USER_NAME))
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
-AUTOSTART_DESKTOP = os.path.expanduser(
-    "{}/.config/autostart/slimbookintelcontroller-autostart.desktop".format(HOMEDIR)
+HOMEDIR = os.path.expanduser("~{}".format(USER_NAME))
+
+CONFIG_FILE = os.path.join(
+    HOMEDIR, ".config/slimbookintelcontroller/slimbookintelcontroller.conf"
+)
+LAUNCHER_DESKTOP = os.path.join(
+    CURRENT_PATH, "slimbookintelcontroller-autostart.desktop"
+)
+AUTOSTART_DESKTOP = os.path.join(
+    HOMEDIR, ".config/autostart/slimbookintelcontroller-autostart.desktop"
 )
 
-config_object = ConfigParser()
-config_file = "{}/.config/slimbookintelcontroller/slimbookintelcontroller.conf".format(
-    HOMEDIR
-)
-config = ConfigParser()
-config.read(config_file)
+# IDIOMAS ----------------------------------------------------------------
 
 _ = utils.load_translation("slimbookintelcontroller")
 
 cpuinfo = utils.get_cpu_info("name")
-cpu, model_cpu, version, number, line_suffix = cpuinfo if cpuinfo else exit()
-print(cpu)
+cpu, model_cpu, version, number, line_suffix = (
+    cpuinfo if cpuinfo else logger.critical("Cpu not found")
+)
+logger.debug(cpu)
 
-print(
-    "CPU | Model: '{}' | Version: {}| CPU Series: {} | CPU Line Suffix: {}.".format(
-        model_cpu, version, number, line_suffix
+config = ConfigParser()
+config.read(CONFIG_FILE)
+
+logger.debug(
+    "CPU | Model: '{model_cpu}' | Version: {version} | "
+    "CPU Numbers: {number} | CPU Letters: {line_suffix}.".format(
+        model_cpu=model_cpu,
+        version=version,
+        number=number,
+        line_suffix=line_suffix,
     )
 )
+logger.debug(CONFIG_FILE)
 
 
 class SlimbookINTEL(Gtk.ApplicationWindow):
+
     modo_actual = ""
-    current_indicator = ""
+    indicador_actual = ""
     autostart_actual = ""
     parameters = ("", "", "")
     exec_indicator = True
 
     def __init__(self):
+        # WINDOW
         Gtk.Window.__init__(self, title="Slimbook Intel Controller")
-        ICON = CURRENT_PATH + "/images/slimbookintelcontroller.svg"
-        try:
-            self.set_icon_from_file(ICON)
-        except Exception:
-            print("Icon not found" + ICON)
+        icon = os.path.join(CURRENT_PATH, "images/slimbookintelcontroller.svg")
+        if os.path.isfile(icon):
+            self.set_icon_from_file(icon)
+        else:
+            logger.error("Icon not found {}".format(icon))
 
         self.set_decorated(False)
+        # self.set_size_request(925,590) #anchoxalto
         self.set_position(Gtk.WindowPosition.CENTER)
         self.get_style_context().add_class("bg-image")
-        self.set_size_request(700, 0)  # anchoxalto
-        self.set_name("main")
 
         # Movement
         self.active = True
@@ -120,12 +162,11 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
     def on_btnAceptar_clicked(self, widget):
         # Check secureboot
-
         exit_code, msg = subprocess.getstatusoutput(
             'mokutil --sb-state | grep -i "SecureBoot disabled"'
         )
 
-        if not exit_code == 0:
+        if exit_code:
             self.dialog(
                 _("Secureboot Warning"),
                 _(
@@ -134,13 +175,34 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             )
 
         elif self.exec_indicator:
+            # Comprobamos los switch
             self._inicio_automatico(self.switch1, self.switch1.get_state())
             self._show_indicator(self.switch2, self.switch2.get_state())
 
-            self.update_config_file("mode", self.modo_actual)
-            self.update_config_file("autostart", self.autostart_actual)
-            self.update_config_file("show-icon", self.current_indicator)
-            print("Updating: " + config_file + " ...")
+            # ACTUALIZAMOS VARIABLES
+            config.set("CONFIGURATION", "mode", self.modo_actual)
+            logger.debug(
+                "Variable |   mode    | updated, actual value: {} ...".format(
+                    self.modo_actual
+                )
+            )
+            config.set("CONFIGURATION", "autostart", self.autostart_actual)
+            logger.debug(
+                "Variable | autostart | updated, actual value: {} ...".format(
+                    self.modo_actual
+                )
+            )
+            config.set("CONFIGURATION", "show-icon", self.indicador_actual)
+            logger.debug(
+                "Variable | show-icon | updated, actual value: {} ...".format(
+                    self.modo_actual
+                )
+            )
+
+            with open(CONFIG_FILE, "w") as configfile:
+                config.write(configfile)
+
+            logger.info("Updating: {} ...".format(CONFIG_FILE))
 
             if self.exec_indicator:
                 self.reboot_indicator()
@@ -154,59 +216,77 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
                 ),
             )
 
-        self.exit()
+        Gtk.main_quit()
 
     def dialog(self, title, message, link=None):
         dialog = Gtk.MessageDialog(
+            # transient_for=self,
             flags=0,
             message_type=Gtk.MessageType.WARNING,
             buttons=Gtk.ButtonsType.CLOSE,
             text=title,
         )
+
         dialog.format_secondary_text(message)
+
         dialog.set_position(Gtk.WindowPosition.CENTER)
-        dialog.run()
+
+        response = dialog.run()
+
+        if response == Gtk.ResponseType.CLOSE:
+            logger.info("WARN dialog closed by clicking CLOSE button")
+
         dialog.destroy()
 
-    # Copy autostart file in directory
+    # Copies autostart file in directory
     def _inicio_automatico(self, switch, state):
+
         if switch.get_active() is True:
             os.system("pkexec slimbookintelcontroller-pkexec autostart enable")
             self.autostart_actual = "on"
+
         else:
-            print("\nAutostart Disabled")
+            logger.info("Autostart Disabled")
             os.system("pkexec slimbookintelcontroller-pkexec autostart disable")
             self.autostart_actual = "off"
 
-        print("Autostart now: " + self.autostart_actual + "")
+        logger.info("Autostart now: {}".format(self.autostart_actual))
 
     def _show_indicator(self, switch, state):
-        if switch.get_active() is True:
-            print("\nIndicator Enabled")
-            self.current_indicator = "on"
-        else:
-            print("\nIndicator Disabled")
-            self.current_indicator = "off"
 
-        self.update_config_file("show-icon", self.current_indicator)
-        print("Indicator now: {}".format(self.current_indicator))
+        if switch.get_active() is True:
+            logger.info("Indicator Enabled")
+            self.indicador_actual = "on"  # --> Luego esta variable será guardada y cargada desde el programa indicador
+        else:
+            logger.info("Indicator Disabled")
+            self.indicador_actual = "off"
+
+        config.set("CONFIGURATION", "show-icon", self.indicador_actual)
+        logger.info("Indicator now: {}".format(self.indicador_actual))
 
     def init_gui(self):  # ---> UNFINISHED
-        config.read(config_file)
+        config.read(CONFIG_FILE)
+
+        # GRIDS
+
         win_grid = Gtk.Grid(column_homogeneous=True, column_spacing=0, row_spacing=10)
+
         grid = Gtk.Grid(
             column_homogeneous=True,
             # row_homogeneous=True,
             column_spacing=0,
             row_spacing=25,
         )
+
         self.add(win_grid)
 
         # CONTENT --------------------------------------------------------------------------------
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRENT_PATH + "/images/slimbookintelcontroller_header.png",
-            width=700,
+            filename=os.path.join(
+                CURRENT_PATH, "images/slimbookintelcontroller_header.png"
+            ),
+            width=600,
             height=200,
             preserve_aspect_ratio=True,
         )
@@ -242,7 +322,8 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         # Processor
         hbox_cpu = Gtk.HBox()
-        cpu_name = Gtk.Label(label=cpu)
+
+        cpu_name = Gtk.Label(label=cpu[cpu.find(":") + 1 :])
         cpu_name.set_halign(Gtk.Align.CENTER)
         hbox_cpu.set_name("cpu_info")
 
@@ -261,16 +342,17 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
                 )[0]
                 == 0
             ):
+                logger.info("Found thermal zone! ({})".format(thermal_zone))
                 cpu_thermal_zone = thermal_zone
 
-        if cpu_thermal_zone:
-            cpu_temp = subprocess.getstatusoutput(
+        if cpu_thermal_zone is not None:
+            exit_code, cpu_temp = subprocess.getstatusoutput(
                 r"cat /sys/class/thermal/{}/temp | sed 's/\(.\)..$/ °C/'".format(
                     cpu_thermal_zone
                 )
             )
-            if cpu_temp[0] == 0:
-                label = Gtk.Label(label=cpu_temp[1])
+            if exit_code:
+                label = Gtk.Label(label=cpu_temp)
 
                 def _update_label(label: Gtk.Label):
                     label.set_label(
@@ -285,15 +367,15 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
                 GLib.timeout_add_seconds(2, _update_label, label)
                 hbox_cpu.pack_start(label, True, True, 0)
             else:
-                print("Cpu_temp 404")
+                logger.warning("Cpu_temp 404")
         else:
-            print("Thermal_zone 404")
+            logger.warning("Thermal_zone 404")
 
         separador = Gtk.Separator()
         separador.set_halign(Gtk.Align.CENTER)
 
         pixbuf1 = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRENT_PATH + "/images/cross.png",
+            filename=os.path.join(CURRENT_PATH, "images/cross.png"),
             width=20,
             height=20,
             preserve_aspect_ratio=True,
@@ -303,8 +385,8 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         close.get_style_context().add_class("close")
 
         evnt_close = Gtk.EventBox()
-        evnt_close.set_valign(Gtk.Align.CENTER)
-        evnt_close.set_halign(Gtk.Align.CENTER)
+        evnt_close.set_valign(Gtk.Align.START)
+        evnt_close.set_halign(Gtk.Align.END)
         evnt_close.add(close)
         evnt_close.connect("button_press_event", self.on_btnCerrar_clicked)
 
@@ -313,7 +395,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         menu.append(Gtk.MenuItem(label="pl"))
 
         pixbuf1 = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRENT_PATH + "/images/settings.png",
+            filename=os.path.join(CURRENT_PATH, "images/settings.png"),
             width=20,
             height=20,
             preserve_aspect_ratio=True,
@@ -344,7 +426,9 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         rbutton1.set_name("radiobutton")
         rbutton1.set_halign(Gtk.Align.CENTER)
 
-        rbutton1_img = Gtk.Image.new_from_file(CURRENT_PATH + "/images/modo1.png")
+        rbutton1_img = Gtk.Image.new_from_file(
+            os.path.join(CURRENT_PATH, "images/modo1.png")
+        )
         rbutton1_img.set_halign(Gtk.Align.CENTER)
 
         vbox1.pack_start(rbutton1_img, False, False, 0)
@@ -356,7 +440,9 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         rbutton2.set_name("radiobutton")
         rbutton2.set_halign(Gtk.Align.CENTER)
 
-        rbutton2_img = Gtk.Image.new_from_file(CURRENT_PATH + "/images/modo2.png")
+        rbutton2_img = Gtk.Image.new_from_file(
+            os.path.join(CURRENT_PATH, "images/modo2.png")
+        )
         rbutton2_img.set_halign(Gtk.Align.CENTER)
 
         vbox2.pack_start(rbutton2_img, False, False, 0)
@@ -368,7 +454,9 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         rbutton3.set_name("radiobutton")
         rbutton3.set_halign(Gtk.Align.CENTER)
 
-        rbutton3_img = Gtk.Image.new_from_file(CURRENT_PATH + "/images/modo3.png")
+        rbutton3_img = Gtk.Image.new_from_file(
+            os.path.join(CURRENT_PATH, "images/modo3.png")
+        )
         rbutton3_img.set_halign(Gtk.Align.CENTER)
 
         vbox3.pack_start(rbutton3_img, False, False, 0)
@@ -402,7 +490,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         # BTNABOUT_US ----------------------------------------------------------------------------
 
         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
-            filename=CURRENT_PATH + "/images/question.png",
+            filename=os.path.join(CURRENT_PATH, "images/question.png"),
             width=20,
             height=20,
             preserve_aspect_ratio=True,
@@ -425,56 +513,66 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         version_tag.set_name("version")
 
         version_parser = ConfigParser()
+        # Try load system version
         version_parser.read("/usr/share/applications/slimbookintelcontroller.desktop")
-        try:
-            version = version_parser.get("Desktop Entry", "Version")
-        except Exception:
-            version = "Unknown"
+        # Overwrite system version with local one (For develop version)
+        version_parser.read(
+            os.path.join(CURRENT_PATH, "../slimbookintelcontroller.desktop")
+        )
 
-        version_tag.set_markup('<span font="10">Version ' + version + "</span>")
+        version = "Unknown"
+        if version_parser.has_option("Desktop Entry", "Version"):
+            version = version_parser.get("Desktop Entry", "Version")
+            logger.info(version)
+
+        version_tag.set_markup('<span font="10">Version {}</span>'.format(version))
+
         version_tag.set_justify(Gtk.Justification.CENTER)
 
         # GRID ATTACH ----------------------------------------------------------------------------
 
         grid.attach(label1, 1, 3, 3, 1)
         grid.attach(label2, 1, 4, 3, 1)
+
         grid.attach(self.switch1, 6, 3, 3, 1)
         grid.attach(self.switch2, 6, 4, 3, 1)
+
         grid.attach(hbox_cpu, 0, 5, 10, 1)
+
         grid.attach(modos, 0, 6, 10, 1)
+
         grid.attach(hbox_radios, 1, 7, 8, 1)
 
         # WIN GRID ATTACH ------------------------------------------------------------------------
 
         win_grid.attach(grid, 1, 2, 8, 10)
-        win_grid.attach(header_img, 1, 0, 8, 8)
+        win_grid.attach(header_img, 1, 0, 7, 4)
         win_grid.attach(hbox_close, 8, 0, 1, 1)
         win_grid.attach(evnt_box, 8, 12, 1, 1)
         win_grid.attach(version_tag, 1, 12, 2, 1)
         win_grid.attach(botonesBox, 1, 12, 8, 1)
 
-        # Init
-        if config.get("CONFIGURATION", "autostart") == "on":
+        # Inicio automatico :):
+        if config.getboolean("CONFIGURATION", "autostart"):
             # autostart
-            print("")
             self.autostart_actual = "on"
             self.switch1.set_active(True)
-            print("- Autostart enabled")
+            logger.info("- Autostart enabled")
         else:
             self.autostart_actual = "off"
             self.switch2.set_active(False)
-            print("- Autostart disabled")
+            logger.info("- Autostart disabled")
 
-        # Show indicator
-        if config.get("CONFIGURATION", "show-icon") == "on":
-            self.current_indicator = "on"
+        # Mostramos indicador, o no :):
+        if config.getboolean("CONFIGURATION", "show-icon"):
+            self.indicador_actual = "on"
             self.switch2.set_active(True)
-            print("- Indicator enabled")
+            logger.info("- Indicator enabled")
 
         else:
-            self.current_indicator = "off"
+            self.indicador_actual = "off"
             self.switch2.set_active(False)
-            print("- Indicator disabled")
+            logger.info("- Indicator disabled")
 
         # RadiobuttonSelection
         if config.get("CONFIGURATION", "mode") == "low":
@@ -491,44 +589,45 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             self.modo_actual = "high"
             rbutton3.set_active(True)
 
-        print("- " + self.modo_actual.capitalize())
-        self.show_all()
+        logger.info("- {}".format(self.modo_actual.capitalize()))
 
+        self.show_all()
+        logger.debug(model_cpu)
         # CPU Parameters
-        try:
+        if config.has_option("PROCESSORS", model_cpu):
             params = config.get("PROCESSORS", model_cpu).split("/")
             self.parameters = params
-            print("- CPU Parameters: " + str(self.parameters))
-            print("\n.conf data loaded succesfully!\n")
-
-        except Exception:
-            print("Processor not found in list")
+            logger.info("- CPU Parameters: {}".format(self.parameters))
+            logger.info(".conf data loaded succesfully!")
+        else:
+            logger.error("Processor not found in list")
+            self.exec_indicator = False
             self.settings()
             try:
-                config.read(config_file)
+                config.read(CONFIG_FILE)
                 params = config.get("PROCESSORS", model_cpu).split("/")
                 self.parameters = params
             except:
                 self.exec_indicator = False
 
     def reboot_indicator(self):
-        print("\nProcess PID")
+        logger.info("Process PID")
         indicator = subprocess.getoutput("pgrep -f slimbookintelcontrollerindicator")
-        print(indicator)
+        logger.info(indicator)
 
         os.system("kill -9 " + indicator)
-        print(self.exec_indicator)
+        logger.info(self.exec_indicator)
         if self.exec_indicator:
-            print("Starting indicator...")
+            logger.info("Starting indicator...")
             os.system(
                 "python3 " + CURRENT_PATH + "/slimbookintelcontrollerindicator.py  &"
             )
-            print()
         else:
-            print("Not launching indicator, exceptions found")
+            logger.error("Not launching indicator, exceptions found")
 
-    def about_us(self, widget=None, x=None):
-        print("\nAbout us ...")
+    def about_us(self, widget, x):
+        logger.debug("About us ...")
+        # Abre la ventana de info
         self.active = False
         dialog = info.PreferencesDialog()
         dialog.connect("destroy", self.close_dialog)
@@ -541,11 +640,11 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         settings.DialogWin()
 
     def on_btnCerrar_clicked(self, widget=None, x=None):
-        self.exit()
+        Gtk.main_quit()
 
     def update_config_file(self, variable, value):
         config.set("CONFIGURATION", str(variable), str(value))
-        with open(config_file, "w") as configfile:
+        with open(CONFIG_FILE, "w") as configfile:
             config.write(configfile)
         print("Variable |'{}' updated, actual value: {}\n".format(variable, value))
 
@@ -554,14 +653,20 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         sys.exit(0)
 
 
-style_provider = Gtk.CssProvider()
-style_provider.load_from_path(CURRENT_PATH + "/css/style.css")
+def main():
+    style_provider = Gtk.CssProvider()
+    style_provider.load_from_path(os.path.join(CURRENT_PATH, "css/style.css"))
 
-Gtk.StyleContext.add_provider_for_screen(
-    Gdk.Screen.get_default(), style_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-)
+    Gtk.StyleContext.add_provider_for_screen(
+        Gdk.Screen.get_default(),
+        style_provider,
+        Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
+    )
 
-win = SlimbookINTEL()
-win.connect("destroy", Gtk.main_quit)
+    win = SlimbookINTEL()
+    win.connect("destroy", Gtk.main_quit)
+    Gtk.main()
 
-Gtk.main()
+
+if __name__ == "__main__":
+    main()

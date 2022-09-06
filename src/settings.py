@@ -46,6 +46,7 @@ class SettingsDialog(Gtk.Dialog):
         "H": "35@40/40@45/45@54/ 35/45 w",
         "U": "10@12/12@18/15@28/ 10/15/25 w",
         "G1": "13@15/13@18/15@28/ 13/15/25 w",
+        "P": "20@28/24@32/28@64/ 20/28/64 w",
     }
 
     def __init__(self, parent):
@@ -240,6 +241,9 @@ class DialogWin(Gtk.Window):
             label = Gtk.Label(label=_("Any Intel processor detected!"))
             dialog = WarnDialog(self, label)
             response = dialog.run()
+            if response:
+                dialog.close()
+                dialog.destroy()
 
     def accept(self, dialog):
         new_values = "{}@{}/{}@{}/{}@{}/  {}/{}/{}/".format(

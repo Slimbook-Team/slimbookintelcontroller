@@ -86,6 +86,8 @@ def get_cpu_info(var="info"):
         else:
             return None
 
+            # return "Intel i7-12700H", "i7-12700H", "i7", "12700", "H" #For testing
+
     if var == "cores":
         return subprocess.getoutput("nproc")
     if var == "threadspercore":
