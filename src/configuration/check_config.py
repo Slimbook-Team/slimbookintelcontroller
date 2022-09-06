@@ -32,8 +32,15 @@ def main():
     else:
         print('Configuration folder (' + CONFIG_FOLDER + ') found!')
 
-    check_config_file()
-
+    if os.path.isfile(CONFIG_FILE):
+        check_config_file()
+    else:
+        print('Creating config file ...')
+        file = shutil.copy(DEFAULT_CONF, CONFIG_FOLDER)
+        os.umask(0)
+        os.chmod(file, mode=0o766)  # creates with perms
+        os.chown(file, uid, gid)  # set user:group
+        check_config_file()
 
 def check_config_file():
     print('Checking Slimbook Intel Controller Configuration')
@@ -68,9 +75,6 @@ def check_config_file():
                 print('Incidences could not be corrected.')
         else:
             print('Incidences not found.')
-    else:
-        print('Creating config file ...')
-        shutil.copy(DEFAULT_CONF, CONFIG_FOLDER)
 
 
 if __name__ == '__main__':

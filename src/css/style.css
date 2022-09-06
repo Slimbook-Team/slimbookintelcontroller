@@ -8,9 +8,15 @@ window, dialog{
     padding:20px;
 }
 
-/* #settings separator {
-    border: 1px red solid;
-} */
+#settings separator {
+    color: white;
+    background-color: white;
+}
+
+#warn>box{
+    padding:10px;
+}
+
 #settings>box>grid>label, #settings>box>grid>box>label, dialog>box>label {
     color: white
 }

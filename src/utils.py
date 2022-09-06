@@ -1,6 +1,6 @@
 import getpass
 import gettext
-import os, pwd
+import os, pwd, re
 import subprocess
 import locale
 
@@ -12,24 +12,25 @@ def get_user(from_file=None):
         user_name = os.getlogin()
 
     if from_file and os.path.exists(from_file):
-        exit_code, candidate = subprocess.getstatusoutput('cat {} | tail -n 1 | cut -f 2 -d "@"'.format(from_file))
+        exit_code, candidate = subprocess.getstatusoutput(
+            'cat {} | tail -n 1 | cut -f 2 -d "@"'.format(from_file)
+        )
         if exit_code != 0:
             user_name = candidate
 
-    if user_name == 'root':
-        if 'SUDO_USER' in os.environ and os.environ['SUDO_USER'] != 'root':
-            user_name = os.environ['SUDO_USER']
+    if user_name == "root":
+        if "SUDO_USER" in os.environ and os.environ["SUDO_USER"] != "root":
+            user_name = os.environ["SUDO_USER"]
         else:
             user_name = subprocess.getoutput('last -wn1 | head -n 1 | cut -f 1 -d " "')
-
     return user_name
 
 
 def get_languages():
-    languages = ['en']
+    languages = ["en"]
     try:
         user_environ = locale.getlocale()[0]
-        for lang in ["en", "es"]:
+        for lang in ["en", "es", "it"]:
             if user_environ.find(lang) >= 0:
                 languages = [lang]
                 break
@@ -43,30 +44,56 @@ def load_translation(filename):
     languages = get_languages()
     return gettext.translation(
         filename,
-        os.path.join(current_path, 'translations'),
+        os.path.join(current_path, "translations"),
         languages=languages,
-        fallback=True
+        fallback=True,
     ).gettext
+
 
 # INTEL CONTROLLER
 def get_uid(username):
     return pwd.getpwnam(username).pw_uid
-    
+
+
 def get_gid(username):
     return pwd.getpwnam(username).pw_gid
 
+
 def get_os_info():
-    info = subprocess.getoutput('cat /etc/os-release ').split('\n')
+    info = subprocess.getoutput("cat /etc/os-release ").split("\n")
     return info
 
-def get_cpu_info(var='info'):
+
+def get_cpu_info(var="info"):
     info = ()
-    if var == 'name':
-        return subprocess.getoutput('cat /proc/cpuinfo | grep name | uniq').split(':')[1].strip()
-    if var == 'cores':
-        return subprocess.getoutput('nproc')
-    if var == 'threadspercore':
-        cores = subprocess.getoutput('cat /proc/cpuinfo | grep "cpu cores" | uniq').split(':')[1].strip()
+    if var == "info":
+        print(
+            "Information get_cpu_info().\nOptions: \n\tname\n\tcores\n\tthreadspercore"
+        )
+    if var == "name":
+        cpu = (
+            subprocess.getoutput("cat /proc/cpuinfo | grep name | uniq")
+            .split(":")[1]
+            .strip()
+        )
+        if cpu.find("Intel") != -1:
+            patron = re.compile(r"[ ](\w\d)[-]([0-9]{4,5})(\w*)")
+            version = patron.search(cpu).group(1)
+            number = patron.search(cpu).group(2)
+            line_suffix = patron.search(cpu).group(3)
+            model_cpu = version + "-" + number + line_suffix
+            return cpu, model_cpu, version, number, line_suffix
+        else:
+            return None
+
+            # return "Intel i7-12700H", "i7-12700H", "i7", "12700", "H" #For testing
+
+    if var == "cores":
+        return subprocess.getoutput("nproc")
+    if var == "threadspercore":
+        cores = (
+            subprocess.getoutput('cat /proc/cpuinfo | grep "cpu cores" | uniq')
+            .split(":")[1]
+            .strip()
+        )
         return cores
-    if var == 'info':
-        print('Information get_cpu_info().\nOptions: \n\tname\n\tcores\n\tthreadspercore')
