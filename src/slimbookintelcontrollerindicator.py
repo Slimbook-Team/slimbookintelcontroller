@@ -80,7 +80,7 @@ class Indicator(object):
         high_mode_icon.set_from_file(IMAGES.get("high"))
 
         low_mode_item = Gtk.ImageMenuItem(
-            label=_("Medium performance"), image=low_mode_icon
+            label=_("Low performance"), image=low_mode_icon
         )
         low_mode_item.connect("activate", self.lowperformance)
         low_mode_item.set_always_show_image(True)
