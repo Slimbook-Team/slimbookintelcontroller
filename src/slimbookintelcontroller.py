@@ -6,6 +6,7 @@ import sys
 import gi
 import math
 import subprocess
+import shutil
 import configuration
 
 # We want load first current location
@@ -241,12 +242,21 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     def _inicio_automatico(self, switch, state):
 
         if switch.get_active() is True:
-            os.system("pkexec slimbookintelcontroller-pkexec autostart enable")
+            if not os.path.exists("/home/" + USER_NAME + "/.config/autostart/"):
+                os.makedirs("/home/" + USER_NAME + "/.config/autostart/", mode=0o764)  # creates with perms
+                print("Dir autostart created. 0o764")
+        
+            if not os.path.isfile(AUTOSTART_DESKTOP):
+                shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)
+                os.system("sudo chmod 764 " + AUTOSTART_DESKTOP)
+                print("File -autostart has been copied!.")            
             self.autostart_actual = "on"
 
         else:
             logger.info("Autostart Disabled")
-            os.system("pkexec slimbookintelcontroller-pkexec autostart disable")
+            if os.path.isfile(AUTOSTART_DESKTOP):
+                    os.remove(AUTOSTART_DESKTOP)
+                    print("File -autostart has been deleted.")
             self.autostart_actual = "off"
 
         logger.info("Autostart now: {}".format(self.autostart_actual))

@@ -49,22 +49,6 @@ def main(args):  # Args will be like --> command_name value
             call = subprocess.getstatusoutput("sudo intel-undervolt apply")
             print("Exit: " + str(call[0]))  # To do after suspension
 
-        elif args[1] == "autostart":
-            if not os.path.exists("/home/" + USER_NAME + "/.config/autostart/"):
-                os.system("mkdir /home/" + USER_NAME + "/.config/autostart/")
-                print("Dir autostart created.")
-
-            if args[2] == "enable":
-                if not os.path.isfile(AUTOSTART_DESKTOP):
-                    shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)
-                    os.system("sudo chmod 755 " + AUTOSTART_DESKTOP)
-                    print("File -autostart has been copied!.")
-
-            elif args[2] == "disable":
-                if os.path.isfile(AUTOSTART_DESKTOP):
-                    os.remove(AUTOSTART_DESKTOP)
-                    print("File -autostart has been deleted.")
-
     else:  # --> Apply all
         apply_all()
 
