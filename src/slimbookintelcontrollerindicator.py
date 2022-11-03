@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 #
 
-from configparser import ConfigParser
 import os
 import signal
 import subprocess
 import sys
 import utils
 import gi
+import configuration
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
@@ -27,10 +27,7 @@ IMAGESPATH = os.path.join(CURRENT_PATH, "images")
 config_file = os.path.join(
     HOMEDIR, ".config/slimbookintelcontroller/slimbookintelcontroller.conf"
 )
-
-config_object = ConfigParser()
-config = ConfigParser()
-config.read(config_file)
+config = configuration.read_conf(config_file)
 
 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
     filename="{}/images/slimbookintelcontroller_header.png".format(CURRENT_PATH),
@@ -123,8 +120,6 @@ class Indicator(object):
         os.system("slimbookintelcontroller")
 
     def inicio(self):
-
-        config = ConfigParser()
         config.read(config_file)
 
         INDICATOR = {
@@ -177,6 +172,7 @@ class Indicator(object):
             )
 
     def update_config_file(self, variable, value):
+        config.read(config_file)
         config.set("CONFIGURATION", str(variable), str(value))
         with open(config_file, "w") as configfile:
             config.write(configfile)

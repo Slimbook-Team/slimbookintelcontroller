@@ -1,4 +1,11 @@
-slimbookintelcontroller (0.5beta) focal; urgency=low
+slimbookintelcontroller (0.6beta) jammy; urgency=low
+
+  * Removed dependencies
+  * Fixed custom value setting bug
+
+ -- slimbook <dev@slimbook.es>  Thu, 8 Sep 2022 16:04:21 +0200
+
+slimbookintelcontroller (0.5beta) jammy; urgency=low
 
   * Added support for P line_sufix processors.
   * Added new Executiive processor.

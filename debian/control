@@ -9,7 +9,7 @@ Homepage: http://slimbook.es
 Package: slimbookintelcontroller
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends},
-  python3,
+     python3,
      python3-gi,
      python3-pil,
      python3-dbus,
@@ -18,12 +18,7 @@ Depends: ${misc:Depends}, ${python:Depends},
      build-essential,
      libnotify-bin,
      cmake,
-     cmake-data,
      mokutil,
      libcurl4,
-     libpci-dev,
-     librhash0,
-     libudev-dev,
-     zlib1g-dev
 Description: Aplicacion para la gestion de rendimiento de procesadores intel
  Aplicacion para la gestion de rendimiento de procesadores intel

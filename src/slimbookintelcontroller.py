@@ -6,7 +6,7 @@ import sys
 import gi
 import math
 import subprocess
-import re  # Busca patrones expresiones regulares
+import configuration
 
 # We want load first current location
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -19,7 +19,6 @@ import slimbookintelcontrollerinfo as info
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 
-from configparser import ConfigParser
 from gi.repository import Gdk, Gtk, GdkPixbuf, GLib
 
 logger = logging.getLogger()
@@ -61,6 +60,8 @@ AUTOSTART_DESKTOP = os.path.join(
     HOMEDIR, ".config/autostart/slimbookintelcontroller-autostart.desktop"
 )
 
+config = configuration.read_conf(CONFIG_FILE)
+
 # IDIOMAS ----------------------------------------------------------------
 
 _ = utils.load_translation("slimbookintelcontroller")
@@ -71,8 +72,6 @@ cpu, model_cpu, version, number, line_suffix = (
 )
 logger.debug(cpu)
 
-config = ConfigParser()
-config.read(CONFIG_FILE)
 
 logger.debug(
     "CPU | Model: '{model_cpu}' | Version: {version} | "
@@ -512,14 +511,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         version_tag.set_valign(Gtk.Align.END)
         version_tag.set_name("version")
 
-        version_parser = ConfigParser()
-        # Try load system version
-        version_parser.read("/usr/share/applications/slimbookintelcontroller.desktop")
-        # Overwrite system version with local one (For develop version)
-        version_parser.read(
-            os.path.join(CURRENT_PATH, "../slimbookintelcontroller.desktop")
-        )
-
+        version_parser = configuration.read_conf(os.path.join(CURRENT_PATH, "../slimbookintelcontroller.desktop"))
         version = "Unknown"
         if version_parser.has_option("Desktop Entry", "Version"):
             version = version_parser.get("Desktop Entry", "Version")
