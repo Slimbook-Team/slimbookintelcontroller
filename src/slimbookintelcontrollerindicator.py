@@ -182,7 +182,9 @@ class Indicator(object):
         mode = "low"
         values = self.parameters[0].split("@")
         self.testindicator.set_icon_full("intel-green", "Low mode")
-        print('Updating "{}" values: {} {}'.format(mode, values[0], values[1]))
+        print(
+            'Updating "{}" values: (original) {} {}'.format(mode, values[0], values[1])
+        )
         self.update_config_file("mode", mode)
         os.system("pkexec /usr/bin/slimbookintelcontroller-pkexec")
 
@@ -190,7 +192,9 @@ class Indicator(object):
         mode = "medium"
         values = self.parameters[1].split("@")
         self.testindicator.set_icon_full("intel-blue", "Medium mode")
-        print('Updating "{}" values: {} {}'.format(mode, values[0], values[1]))
+        print(
+            'Updating "{}" values: (original) {} {}'.format(mode, values[0], values[1])
+        )
         self.update_config_file("mode", mode)
         os.system("pkexec /usr/bin/slimbookintelcontroller-pkexec")
 
@@ -198,7 +202,9 @@ class Indicator(object):
         mode = "high"
         values = self.parameters[2].split("@")
         self.testindicator.set_icon_full("intel-red", "High mode")
-        print('Updating "{}" values: {} {}'.format(mode, values[0], values[1]))
+        print(
+            'Updating "{}" values: (original) {} {}'.format(mode, values[0], values[1])
+        )
         self.update_config_file("mode", mode)
         os.system("pkexec /usr/bin/slimbookintelcontroller-pkexec")
 

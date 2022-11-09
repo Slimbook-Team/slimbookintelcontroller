@@ -179,6 +179,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             self._inicio_automatico(self.switch1, self.switch1.get_state())
             self._show_indicator(self.switch2, self.switch2.get_state())
 
+            config.read(CONFIG_FILE)
             # ACTUALIZAMOS VARIABLES
             config.set("CONFIGURATION", "mode", self.modo_actual)
             logger.debug(
@@ -600,9 +601,10 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         self.show_all()
         logger.debug(model_cpu)
         # CPU Parameters
-        if config.has_option("PROCESSORS", model_cpu):
-            params = config.get("PROCESSORS", model_cpu).split("/")
-            self.parameters = params
+        if config.has_option("CONFIGURATION", "cpu-parameters"):
+            self.parameters = ("CONFIGURATION", "cpu-parameters")
+        elif config.has_option("PROCESSORS", model_cpu):
+            self.parameters = config.get("PROCESSORS", model_cpu).split("/")
             logger.info("- CPU Parameters: {}".format(self.parameters))
             logger.info(".conf data loaded succesfully!")
         else:
@@ -611,8 +613,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             self.settings()
             try:
                 config.read(CONFIG_FILE)
-                params = config.get("PROCESSORS", model_cpu).split("/")
-                self.parameters = params
+                self.parameters = config.get("PROCESSORS", model_cpu).split("/")
             except:
                 self.exec_indicator = False
 
