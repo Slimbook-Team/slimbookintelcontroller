@@ -243,20 +243,22 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         if switch.get_active() is True:
             if not os.path.exists("/home/" + USER_NAME + "/.config/autostart/"):
-                os.makedirs("/home/" + USER_NAME + "/.config/autostart/", mode=0o764)  # creates with perms
+                os.makedirs(
+                    "/home/" + USER_NAME + "/.config/autostart/", mode=0o764
+                )  # creates with perms
                 print("Dir autostart created. 0o764")
-        
+
             if not os.path.isfile(AUTOSTART_DESKTOP):
                 shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)
                 os.system("sudo chmod 764 " + AUTOSTART_DESKTOP)
-                print("File -autostart has been copied!.")            
+                print("File -autostart has been copied!.")
             self.autostart_actual = "on"
 
         else:
             logger.info("Autostart Disabled")
             if os.path.isfile(AUTOSTART_DESKTOP):
-                    os.remove(AUTOSTART_DESKTOP)
-                    print("File -autostart has been deleted.")
+                os.remove(AUTOSTART_DESKTOP)
+                print("File -autostart has been deleted.")
             self.autostart_actual = "off"
 
         logger.info("Autostart now: {}".format(self.autostart_actual))
@@ -521,7 +523,9 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         version_tag.set_valign(Gtk.Align.END)
         version_tag.set_name("version")
 
-        version_parser = configuration.read_conf(os.path.join(CURRENT_PATH, "../slimbookintelcontroller.desktop"))
+        version_parser = configuration.read_conf(
+            os.path.join(CURRENT_PATH, "../slimbookintelcontroller.desktop")
+        )
         version = "Unknown"
         if version_parser.has_option("Desktop Entry", "Version"):
             version = version_parser.get("Desktop Entry", "Version")

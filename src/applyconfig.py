@@ -33,6 +33,7 @@ print(
     + str(subprocess.getoutput("whoami"))
 )
 
+
 def main(args):  # Args will be like --> command_name value
     # Argument 0 is the current route
     if len(args) > 1:
@@ -56,11 +57,14 @@ def main(args):  # Args will be like --> command_name value
 def apply_all():
 
     mode = config.get("CONFIGURATION", "mode")
-    if (not config.has_option("CONFIGURATION", "cpu-parameters") or config.get("CONFIGURATION", "cpu-parameters") == ""):
+    if (
+        not config.has_option("CONFIGURATION", "cpu-parameters")
+        or config.get("CONFIGURATION", "cpu-parameters") == ""
+    ):
         print("Getting original processor params")
-        params = (config.get("PROCESSORS", model_cpu))	    
+        params = config.get("PROCESSORS", model_cpu)
     else:
-        params = (config.get("CONFIGURATION", "cpu-parameters"))
+        params = config.get("CONFIGURATION", "cpu-parameters")
 
     params = params.split(" ")[0].split("/")
     print(params)
