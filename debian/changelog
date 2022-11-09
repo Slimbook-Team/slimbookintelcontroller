@@ -2,8 +2,9 @@ slimbookintelcontroller (0.6beta) jammy; urgency=low
 
   * Removed dependencies
   * Fixed custom value setting bug
+  * Fix autostart directory permissions
 
- -- slimbook <dev@slimbook.es>  Thu, 8 Sep 2022 16:04:21 +0200
+ -- slimbook <dev@slimbook.es>  Wed, 9 Nov 2022 16:04:21 +0200
 
 slimbookintelcontroller (0.5beta) jammy; urgency=low
 
