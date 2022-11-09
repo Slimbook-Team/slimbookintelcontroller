@@ -48,9 +48,8 @@ msgid "This software is provided * as is * without warranty of any kind.."
 msgstr "Questo software viene fornito *così com'è* senza garanzie di alcun tipo.."
 
 #: slimbookintelcontrollerinfo.py:201
-#, fuzzy
 msgid "Visit @Slimbook web"
-msgstr "Visita il sito di @Slimbook"
+msgstr "Visita @Slimbook web"
 
 #: slimbookintelcontrollerinfo.py:205
 msgid "@SlimbookIntelController Tutorial"
