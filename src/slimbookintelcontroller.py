@@ -6,7 +6,8 @@ import sys
 import gi
 import math
 import subprocess
-import re  # Busca patrones expresiones regulares
+import shutil
+import configuration
 
 # We want load first current location
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -19,7 +20,6 @@ import slimbookintelcontrollerinfo as info
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
 
-from configparser import ConfigParser
 from gi.repository import Gdk, Gtk, GdkPixbuf, GLib
 
 logger = logging.getLogger()
@@ -61,6 +61,8 @@ AUTOSTART_DESKTOP = os.path.join(
     HOMEDIR, ".config/autostart/slimbookintelcontroller-autostart.desktop"
 )
 
+config = configuration.read_conf(CONFIG_FILE)
+
 # IDIOMAS ----------------------------------------------------------------
 
 _ = utils.load_translation("slimbookintelcontroller")
@@ -71,8 +73,6 @@ cpu, model_cpu, version, number, line_suffix = (
 )
 logger.debug(cpu)
 
-config = ConfigParser()
-config.read(CONFIG_FILE)
 
 logger.debug(
     "CPU | Model: '{model_cpu}' | Version: {version} | "
@@ -179,6 +179,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             self._inicio_automatico(self.switch1, self.switch1.get_state())
             self._show_indicator(self.switch2, self.switch2.get_state())
 
+            config.read(CONFIG_FILE)
             # ACTUALIZAMOS VARIABLES
             config.set("CONFIGURATION", "mode", self.modo_actual)
             logger.debug(
@@ -242,12 +243,23 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
     def _inicio_automatico(self, switch, state):
 
         if switch.get_active() is True:
-            os.system("pkexec slimbookintelcontroller-pkexec autostart enable")
+            if not os.path.exists("/home/" + USER_NAME + "/.config/autostart/"):
+                os.makedirs(
+                    "/home/" + USER_NAME + "/.config/autostart/", mode=0o764
+                )  # creates with perms
+                print("Dir autostart created. 0o764")
+
+            if not os.path.isfile(AUTOSTART_DESKTOP):
+                shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)
+                os.system("sudo chmod 764 " + AUTOSTART_DESKTOP)
+                print("File -autostart has been copied!.")
             self.autostart_actual = "on"
 
         else:
             logger.info("Autostart Disabled")
-            os.system("pkexec slimbookintelcontroller-pkexec autostart disable")
+            if os.path.isfile(AUTOSTART_DESKTOP):
+                os.remove(AUTOSTART_DESKTOP)
+                print("File -autostart has been deleted.")
             self.autostart_actual = "off"
 
         logger.info("Autostart now: {}".format(self.autostart_actual))
@@ -512,14 +524,9 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         version_tag.set_valign(Gtk.Align.END)
         version_tag.set_name("version")
 
-        version_parser = ConfigParser()
-        # Try load system version
-        version_parser.read("/usr/share/applications/slimbookintelcontroller.desktop")
-        # Overwrite system version with local one (For develop version)
-        version_parser.read(
+        version_parser = configuration.read_conf(
             os.path.join(CURRENT_PATH, "../slimbookintelcontroller.desktop")
         )
-
         version = "Unknown"
         if version_parser.has_option("Desktop Entry", "Version"):
             version = version_parser.get("Desktop Entry", "Version")
@@ -594,9 +601,10 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         self.show_all()
         logger.debug(model_cpu)
         # CPU Parameters
-        if config.has_option("PROCESSORS", model_cpu):
-            params = config.get("PROCESSORS", model_cpu).split("/")
-            self.parameters = params
+        if config.has_option("CONFIGURATION", "cpu-parameters"):
+            self.parameters = ("CONFIGURATION", "cpu-parameters")
+        elif config.has_option("PROCESSORS", model_cpu):
+            self.parameters = config.get("PROCESSORS", model_cpu).split("/")
             logger.info("- CPU Parameters: {}".format(self.parameters))
             logger.info(".conf data loaded succesfully!")
         else:
@@ -605,8 +613,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             self.settings()
             try:
                 config.read(CONFIG_FILE)
-                params = config.get("PROCESSORS", model_cpu).split("/")
-                self.parameters = params
+                self.parameters = config.get("PROCESSORS", model_cpu).split("/")
             except:
                 self.exec_indicator = False
 
