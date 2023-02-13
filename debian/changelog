@@ -1,3 +1,10 @@
+slimbookintelcontroller (0.8beta) jammy; urgency=low
+
+  * Added preconfiguration for G4 and G7 processors.
+  * Cleaned unnecessary files.
+
+ -- slimbook <dev@slimbook.es>  Fri, 11 Nov 2022 16:04:21 +0200
+
 slimbookintelcontroller (0.7beta) jammy; urgency=low
 
   * Fixed custom value setting bug
