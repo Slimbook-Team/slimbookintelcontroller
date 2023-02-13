@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Slimbook Intel Controller
-Version=0.6beta
+Version=0.8beta
 Exec=slimbookintelcontroller
 Comment=Modify your CPU power!
 Icon=/usr/share/slimbookintelcontroller/src/images/slimbookintelcontroller.svg
