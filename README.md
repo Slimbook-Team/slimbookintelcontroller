@@ -9,7 +9,7 @@ If you want to try the software in any other CPU, you can add it to the configur
 
 NOTE: Secureboot enabled does not allow kernel to manage CPU parameters.
 
-This are the [supported processors as default](https://github.com/slimbook/slimbookintelcontroller/blob/69d0ec788701463042cfbecdd13981f9fb9c4d89/src/configuration/slimbookintelcontroller.conf#L9), you can also add your processor settings.
+This are the [supported processors as default](https://github.com/Slimbook-Team/slimbookintelcontroller/blob/main/src/configuration/slimbookintelcontroller.conf), you can also add your processor settings.
 
 # Install
 ```bat
