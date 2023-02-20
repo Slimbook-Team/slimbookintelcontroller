@@ -363,7 +363,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
                     cpu_thermal_zone
                 )
             )
-            if exit_code:
+            if exit_code==0:
                 label = Gtk.Label(label=cpu_temp)
 
                 def _update_label(label: Gtk.Label):
