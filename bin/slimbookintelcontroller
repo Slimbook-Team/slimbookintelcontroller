@@ -22,11 +22,11 @@ sys.path.insert(1, srcpath)
 
 
 if __name__ == "__main__":
-    pgrep = subprocess.getoutput("pgrep slimbookintelcontroller")
+    pgrep = subprocess.getstatusoutput("pgrep slimbookintelcontroller")
 
-    numProcRunning = pgrep.split("\n")
+    numProcRunning = pgrep[0].split("\n")
 
-    if len(numProcRunning) > 1:
+    if len(numProcRunning) > 1 and pgrep[1]==0:
         print("Slimbook Intel it is in execution")
     else:
 

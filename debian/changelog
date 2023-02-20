@@ -1,3 +1,9 @@
+slimbookintelcontroller (0.9beta) jammy; urgency=low
+
+  * Fixed temperature read.
+
+ -- slimbook <dev@slimbook.es>  Mon, 20 Feb 2023 16:04:21 +0200
+
 slimbookintelcontroller (0.8beta) jammy; urgency=low
 
   * Added preconfiguration for G4 and G7 processors.
