@@ -22,7 +22,7 @@ sys.path.insert(1, srcpath)
 
 
 if __name__ == "__main__":
-    pgrep = subprocess.getstatusoutput("pgrep slimbookintelcontroller")
+    pgrep = subprocess.getstatusoutput("pgrep -f slimbookintelcontroller")
 
     numProcRunning = pgrep[0].split("\n")
 
