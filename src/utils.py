@@ -4,6 +4,9 @@ import os, pwd, re
 import subprocess
 import locale
 
+from pathlib import Path
+
+CONFIG_FILE = str(Path.home()) + '/.config/slimbookintelcontroller/slimbookintelcontroller.conf'
 
 def get_user(from_file=None):
     try:
@@ -97,3 +100,60 @@ def get_cpu_info(var="info"):
             .strip()
         )
         return cores
+
+def get_secureboot_status():
+
+    if (not Path("/sys/firmware/efi").exists()):
+        return False
+        
+    SB_VAR = "/sys/firmware/efi/efivars/SecureBoot-8be4df61-93ca-11d2-aa0d-00e098032b8c"
+    
+    if (not Path(SB_VAR).exists()):
+        return False
+    
+    sb = False
+    f = open(SB_VAR,"rb")
+    var = list(f.read())
+    if (var[4] == 1):
+        sb = True
+    f.close()
+    
+    return sb
+
+def get_run_dir():
+    return "/run/user/{0}".format(os.getuid())
+    
+def is_pid_alive(pid):
+    try:
+        os.kill(pid,0)
+        return True
+    except:
+        return False
+
+def get_pid_from_file(name):
+    run = get_run_dir()
+    filename = Path(run + "/" + name)
+    
+    if (filename.exists()):
+        f=open(str(filename),"r")
+        data=f.readlines()
+        f.close()
+        if (len(data)>0):
+            return int(data[0])
+        else:
+            return 0
+    else:
+        return 0
+    
+def create_pid_file(name):
+    pid = get_pid_from_file(name)
+    
+    if (pid > 0):
+        return False
+    
+    filename = get_run_dir() + "/" + name
+    f=open(filename,"w")
+    f.write("{0}".format(os.getpid()))
+    f.close()
+    
+    return True

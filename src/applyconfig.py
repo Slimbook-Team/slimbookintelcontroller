@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-# This file will be executed as sudo by pkexec
+# This file will be executed as root by pkexec
 import os
 import sys
 import subprocess
@@ -10,51 +10,23 @@ from time import sleep
 import utils
 import configuration
 
-USER_NAME = utils.get_user()
-HOMEDIR = subprocess.getoutput("echo ~" + USER_NAME)
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-LAUNCHER_DESKTOP = os.path.join(BASE_DIR, "slimbookintelcontroller-autostart.desktop")
-AUTOSTART_DESKTOP = os.path.expanduser(
-    "{}/.config/autostart/slimbookintelcontroller-autostart.desktop".format(HOMEDIR)
-)
 
 model_cpu = utils.get_cpu_info("name")[1]
 
-config_file = HOMEDIR + "/.config/slimbookintelcontroller/slimbookintelcontroller.conf"
-config = configuration.read_conf(config_file)
-
-# Commands:
-# sudo intel-undervolt read
-# sudo intel-undervolt apply
-# sudo
-
-print(
-    "SlimbookIntelController-Applyconfig, executed as: "
-    + str(subprocess.getoutput("whoami"))
-)
-
-
-def main(args):  # Args will be like --> command_name value
-    # Argument 0 is the current route
+def main(args):
     if len(args) > 1:
-        print("Using " + args[1] + " ...")
-
-        if args[1] == "plug":
-            print(args[1])
-            sleep(1)
-            apply_all()
+        if args[1] == "plug" and len(args) > 2:
+            apply_all(args[2])
 
         elif args[1] == "post":
-            print(args[1])
+            call = subprocess.getstatusoutput("/usr/bin/intel-undervolt apply")
 
-            call = subprocess.getstatusoutput("sudo intel-undervolt apply")
-            print("Exit: " + str(call[0]))  # To do after suspension
+    sys.exit(0)
 
-    else:  # --> Apply all
-        apply_all()
-
-
-def apply_all():
+def apply_all(user_config):
+    
+    config = configuration.read_conf(user_config)
 
     mode = config.get("CONFIGURATION", "mode")
     if (
@@ -95,10 +67,7 @@ def apply_all():
     else:
         print("Data not found")
 
-    call = subprocess.getstatusoutput("sudo intel-undervolt apply")
-    print("sudo intel-undervolt apply --> Exit:" + str(call[0]))
-
+    call = subprocess.getstatusoutput("/usr/bin/intel-undervolt apply")
 
 if __name__ == "__main__":
-    # Se obtiene las variables que se le pasa desde el archivo /usr/share/slimbookface/slimbookface
     main(sys.argv)

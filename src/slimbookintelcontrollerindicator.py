@@ -47,7 +47,7 @@ class Indicator(object):
     parameters = ("", "", "")
 
     def __init__(self):
-        self.app = "show_proc"
+        self.app = "com.slimbook.intelcontroller"
         iconpath = "{}/images/".format(CURRENT_PATH)
         self.testindicator = AppIndicator3.Indicator.new(
             self.app, iconpath, AppIndicator3.IndicatorCategory.OTHER
@@ -208,15 +208,23 @@ class Indicator(object):
         self.update_config_file("mode", mode)
         os.system("pkexec /usr/bin/slimbookintelcontroller-pkexec")
 
+if __name__=="__main__":
 
-exit_code, msg = subprocess.getstatusoutput(
-    'mokutil --sb-state | grep -i "SecureBoot disabled"'
-)
-if not exit_code == 0:
-    print("Disable Secureboot, please.")
-    sys.exit(1)
+    pid_name = "slimbook.intel.controller.indicator.pid"
+    pid = utils.get_pid_from_file(pid_name)
+    print(pid)
+    if (pid>0):
+        if (utils.is_pid_alive(pid)):
+            print("process is already running")
+            sys.exit(1)
+        
+    utils.create_pid_file(pid_name)
+            
+    if utils.get_secureboot_status():
+        print("Error: SecureBoot is enabled", file=sys.stderr)
+        sys.exit(1)
 
-Indicator()
+    Indicator()
 
-signal.signal(signal.SIGINT, signal.SIG_DFL)
-Gtk.main()
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    Gtk.main()

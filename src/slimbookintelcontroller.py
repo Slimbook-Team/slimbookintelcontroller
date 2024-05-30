@@ -8,6 +8,7 @@ import math
 import subprocess
 import shutil
 import configuration
+from pathlib import Path
 
 # We want load first current location
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -277,6 +278,13 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         logger.info("Indicator now: {}".format(self.indicador_actual))
 
     def init_gui(self):  # ---> UNFINISHED
+    
+        if not Path(utils.CONFIG_FILE).exists():
+            os.makedirs(os.path.expanduser("~/.config/slimbookintelcontroller"),exist_ok = True)
+            self.update_config_file("autostart","off")
+            self.update_config_file("show-icon","off")
+            self.update_config_file("mode","medium")
+
         config.read(CONFIG_FILE)
 
         # GRIDS
@@ -650,8 +658,11 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         Gtk.main_quit()
 
     def update_config_file(self, variable, value):
+        if not config.has_section("CONFIGURATION"):
+            config.add_section("CONFIGURATION")
+        
         config.set("CONFIGURATION", str(variable), str(value))
-        with open(CONFIG_FILE, "w") as configfile:
+        with open(utils.CONFIG_FILE, "w") as configfile:
             config.write(configfile)
         print("Variable |'{}' updated, actual value: {}\n".format(variable, value))
 
