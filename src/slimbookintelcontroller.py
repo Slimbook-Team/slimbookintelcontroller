@@ -626,19 +626,16 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
                 self.exec_indicator = False
 
     def reboot_indicator(self):
-        logger.info("Process PID")
-        indicator = subprocess.getoutput("pgrep -f slimbookintelcontrollerindicator")
-        logger.info(indicator)
+        pid = utils.get_pid_from_file("slimbook.intel.controller.indicator.pid")
 
-        os.system("kill -9 " + indicator)
-        logger.info(self.exec_indicator)
+        if (pid>0):
+            if (utils.is_pid_alive(pid)):
+                logger.info("Killing indicator process...")
+                os.kill(pid,9)
+
         if self.exec_indicator:
             logger.info("Starting indicator...")
-            os.system(
-                "python3 " + CURRENT_PATH + "/slimbookintelcontrollerindicator.py  &"
-            )
-        else:
-            logger.error("Not launching indicator, exceptions found")
+            os.system("python3 " + CURRENT_PATH + "/slimbookintelcontrollerindicator.py")
 
     def about_us(self, widget, x):
         logger.debug("About us ...")
@@ -672,6 +669,9 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
 
 def main():
+    pid_name = "slimbook.intel.controller.application.pid"
+    utils.application_lock(pid_name)
+    
     style_provider = Gtk.CssProvider()
     style_provider.load_from_path(os.path.join(CURRENT_PATH, "css/style.css"))
 
@@ -684,6 +684,8 @@ def main():
     win = SlimbookINTEL()
     win.connect("destroy", Gtk.main_quit)
     Gtk.main()
+    
+    utils.application_release(pid_name)
 
 
 if __name__ == "__main__":

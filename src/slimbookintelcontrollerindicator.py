@@ -211,15 +211,8 @@ class Indicator(object):
 if __name__=="__main__":
 
     pid_name = "slimbook.intel.controller.indicator.pid"
-    pid = utils.get_pid_from_file(pid_name)
-    print(pid)
-    if (pid>0):
-        if (utils.is_pid_alive(pid)):
-            print("process is already running")
-            sys.exit(1)
-        
-    utils.create_pid_file(pid_name)
-            
+    utils.application_lock(pid_name)
+    
     if utils.get_secureboot_status():
         print("Error: SecureBoot is enabled", file=sys.stderr)
         sys.exit(1)
@@ -228,3 +221,5 @@ if __name__=="__main__":
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     Gtk.main()
+    
+    utils.application_release(pid_name)

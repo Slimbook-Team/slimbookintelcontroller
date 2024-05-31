@@ -146,10 +146,6 @@ def get_pid_from_file(name):
         return 0
     
 def create_pid_file(name):
-    pid = get_pid_from_file(name)
-    
-    if (pid > 0):
-        return False
     
     filename = get_run_dir() + "/" + name
     f=open(filename,"w")
@@ -157,3 +153,23 @@ def create_pid_file(name):
     f.close()
     
     return True
+
+def destroy_pid_file(name):
+    filename = get_run_dir() + "/" + name
+    
+    if (Path(filename).exists()):
+        os.remove(filename)
+
+def application_lock(name):
+    pid = get_pid_from_file(name)
+
+    if (pid>0):
+        if (is_pid_alive(pid)):
+            print("process is already running",file=sys.stderr)
+            sys.exit(1)
+        
+    create_pid_file(name)
+    
+def application_release(name):
+    destroy_pid_file(name)
+
