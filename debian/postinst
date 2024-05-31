@@ -5,15 +5,7 @@
 
 set -x
 
-#clono
-cd /usr/share/slimbookintelcontroller/
-git clone https://github.com/kitsunyan/intel-undervolt.git
 
-cd intel-undervolt/
-./configure && make && make install
-
-chmod +x /usr/lib/systemd/system-sleep/slimbookintelcontroller
-
-python3 /usr/share/slimbookintelcontroller/src/configuration/check_config.py
+#DEBHELPER#
 
 exit 0
