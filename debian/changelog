@@ -1,3 +1,9 @@
+slimbookintelcontroller (0.10.0) noble; urgency=medium
+
+  * Refactored, no new features
+
+ -- Slimbook <dev@slimbook.es>  Fri, 31 May 2024 17:22:17 +0200
+
 slimbookintelcontroller (0.9beta) jammy; urgency=low
 
   * Fixed temperature read.
