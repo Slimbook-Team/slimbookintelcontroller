@@ -18,7 +18,10 @@ CONFIG_FILE = "{}/.config/slimbookintelcontroller/slimbookintelcontroller.conf".
 )
 
 config = ConfigParser()
-config.read(CONFIG_FILE)
+config.read(utils.CONFIG_FILE)
+
+cpu_db = ConfigParser()
+cpu_db.read(utils.CPU_DB_FILE)
 
 _ = utils.load_translation("slimbookintelcontroller")
 
@@ -60,10 +63,10 @@ class SettingsDialog(Gtk.Dialog):
             print("Loads:  " + str(values) + " from file.")
             print("1", values)
         elif (
-            config.has_option("PROCESSORS", model_cpu)
-            and config["PROCESSORS"][model_cpu] != ""
+            cpu_db.has_option("PROCESSORS", model_cpu)
+            and cpu_db["PROCESSORS"][model_cpu] != ""
         ):
-            values = config["PROCESSORS"][model_cpu]
+            values = cpu_db["PROCESSORS"][model_cpu]
             print("Loads:  " + str(values) + " from file.")
             print("2", values)
         else:
@@ -213,7 +216,7 @@ class DialogWin(Gtk.Window):
         Gtk.Window.__init__(self, title="Slimbook Intel Controller")
 
         if cpu.find("Intel") != -1:
-            if not config.has_option("PROCESSORS", MODEL_CPU):
+            if not cpu_db.has_option("PROCESSORS", MODEL_CPU):
                 label = Gtk.Label(
                     label=_(
                         "Your processor is not supported yet. Do you want to add {} to the list?\n"
@@ -229,7 +232,7 @@ class DialogWin(Gtk.Window):
             dialog = SettingsDialog(self)
             dialog.show_all()
             response = dialog.run()
-            config.read(CONFIG_FILE)
+            config.read(utils.CONFIG_FILE)
 
             if response == Gtk.ResponseType.OK:
                 self.accept(dialog)
@@ -269,7 +272,7 @@ class DialogWin(Gtk.Window):
             config.set("CONFIGURATION", "cpu-parameters", new_values)
             print(config["PROCESSORS"][MODEL_CPU])
 
-        with open(CONFIG_FILE, "w") as configfile:
+        with open(utils.CONFIG_FILE, "w") as configfile:
             config.write(configfile)
 
 

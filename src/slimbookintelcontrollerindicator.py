@@ -27,7 +27,8 @@ IMAGESPATH = os.path.join(CURRENT_PATH, "images")
 config_file = os.path.join(
     HOMEDIR, ".config/slimbookintelcontroller/slimbookintelcontroller.conf"
 )
-config = configuration.read_conf(config_file)
+config = configuration.read_conf(utils.CONFIG_FILE)
+cpu_db = configuration.read_conf(utils.CPU_DB_FILE)
 
 pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
     filename="{}/images/slimbookintelcontroller_header.png".format(CURRENT_PATH),
@@ -80,19 +81,19 @@ class Indicator(object):
             label=_("Low performance"), image=low_mode_icon
         )
         low_mode_item.connect("activate", self.lowperformance)
-        low_mode_item.set_always_show_image(True)
+        #low_mode_item.set_always_show_image(True)
 
         medium_mode_item = Gtk.ImageMenuItem(
             label=_("Medium performance"), image=medium_mode_icon
         )
         medium_mode_item.connect("activate", self.mediumperformance)
-        medium_mode_item.set_always_show_image(True)
+        #medium_mode_item.set_always_show_image(True)
 
         high_mode_item = Gtk.ImageMenuItem(
             label=_("High performance"), image=high_mode_icon
         )
         high_mode_item.connect("activate", self.highperformance)
-        high_mode_item.set_always_show_image(True)
+        #high_mode_item.set_always_show_image(True)
 
         preferences_item = Gtk.MenuItem(label=_("Preferences"))
         preferences_item.connect("activate", self.openWindow)
@@ -133,11 +134,11 @@ class Indicator(object):
         )
         self.testindicator.set_status(INDICATOR[option])
         params = (
-            config.get("PROCESSORS", model_cpu)
-            if config.has_option("PROCESSORS", model_cpu)
+            cpu_db.get("PROCESSORS", model_cpu)
+            if cpu_db.has_option("PROCESSORS", model_cpu)
             else None
         )
-
+        print(params)
         if params:
             print("CPU Parameters: " + str(params))
             values = list(filter(str.strip, params.split(" ")))
@@ -172,9 +173,9 @@ class Indicator(object):
             )
 
     def update_config_file(self, variable, value):
-        config.read(config_file)
+        config.read(utils.CONFIG_FILE)
         config.set("CONFIGURATION", str(variable), str(value))
-        with open(config_file, "w") as configfile:
+        with open(utils.CONFIG_FILE, "w") as configfile:
             config.write(configfile)
         print("Variable '{}' updated, actual value: {}\n".format(variable, value))
 

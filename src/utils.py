@@ -7,6 +7,7 @@ import locale
 from pathlib import Path
 
 CONFIG_FILE = str(Path.home()) + '/.config/slimbookintelcontroller/slimbookintelcontroller.conf'
+CPU_DB_FILE = os.path.dirname(os.path.realpath(__file__)) + '/processors.db'
 
 def get_user(from_file=None):
     try:

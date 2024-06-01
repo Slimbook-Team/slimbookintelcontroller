@@ -62,7 +62,8 @@ AUTOSTART_DESKTOP = os.path.join(
     HOMEDIR, ".config/autostart/slimbookintelcontroller-autostart.desktop"
 )
 
-config = configuration.read_conf(CONFIG_FILE)
+config = configuration.read_conf(utils.CONFIG_FILE)
+cpu_db = configuration.read_conf(utils.CPU_DB_FILE)
 
 # IDIOMAS ----------------------------------------------------------------
 
@@ -84,7 +85,7 @@ logger.debug(
         line_suffix=line_suffix,
     )
 )
-logger.debug(CONFIG_FILE)
+logger.debug(utils.CONFIG_FILE)
 
 
 class SlimbookINTEL(Gtk.ApplicationWindow):
@@ -201,10 +202,10 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
                 )
             )
 
-            with open(CONFIG_FILE, "w") as configfile:
+            with open(utils.CONFIG_FILE, "w") as configfile:
                 config.write(configfile)
 
-            logger.info("Updating: {} ...".format(CONFIG_FILE))
+            logger.info("Updating: {} ...".format(utils.CONFIG_FILE))
 
             if self.exec_indicator:
                 self.reboot_indicator()
@@ -252,7 +253,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
             if not os.path.isfile(AUTOSTART_DESKTOP):
                 shutil.copy(LAUNCHER_DESKTOP, AUTOSTART_DESKTOP)
-                os.system("sudo chmod 764 " + AUTOSTART_DESKTOP)
+                #os.system("sudo chmod 764 " + AUTOSTART_DESKTOP)
                 print("File -autostart has been copied!.")
             self.autostart_actual = "on"
 
@@ -285,7 +286,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             self.update_config_file("show-icon","off")
             self.update_config_file("mode","medium")
 
-        config.read(CONFIG_FILE)
+        config.read(utils.CONFIG_FILE)
 
         # GRIDS
 
@@ -611,8 +612,8 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         # CPU Parameters
         if config.has_option("CONFIGURATION", "cpu-parameters"):
             self.parameters = ("CONFIGURATION", "cpu-parameters")
-        elif config.has_option("PROCESSORS", model_cpu):
-            self.parameters = config.get("PROCESSORS", model_cpu).split("/")
+        elif cpu_db.has_option("PROCESSORS", model_cpu):
+            self.parameters = cpu_db.get("PROCESSORS", model_cpu).split("/")
             logger.info("- CPU Parameters: {}".format(self.parameters))
             logger.info(".conf data loaded succesfully!")
         else:
@@ -620,7 +621,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             self.exec_indicator = False
             self.settings()
             try:
-                config.read(CONFIG_FILE)
+                config.read(utils.CONFIG_FILE)
                 self.parameters = config.get("PROCESSORS", model_cpu).split("/")
             except:
                 self.exec_indicator = False
