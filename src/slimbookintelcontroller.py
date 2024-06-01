@@ -105,7 +105,6 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         else:
             logger.error("Icon not found {}".format(icon))
 
-        self.set_decorated(False)
         # self.set_size_request(925,590) #anchoxalto
         self.set_position(Gtk.WindowPosition.CENTER)
         self.get_style_context().add_class("bg-image")
@@ -115,9 +114,11 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         self.is_in_drag = False
         self.x_in_drag = 0
         self.y_in_drag = 0
-        self.connect("button-press-event", self.on_mouse_button_pressed)
-        self.connect("button-release-event", self.on_mouse_button_released)
-        self.connect("motion-notify-event", self.on_mouse_moved)
+        
+        #not working on wayland
+        #self.connect("button-press-event", self.on_mouse_button_pressed)
+        #self.connect("button-release-event", self.on_mouse_button_released)
+        #self.connect("motion-notify-event", self.on_mouse_moved)
 
         self.init_gui()
 
