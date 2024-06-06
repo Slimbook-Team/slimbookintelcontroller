@@ -1,3 +1,9 @@
+slimbookintelcontroller (0.10.3) noble; urgency=medium
+
+  * Fixed main window stuck rebooting indicator
+
+ -- Slimbook <dev@slimbook.es>  Thu, 06 Jun 2024 16:09:26 +0200
+
 slimbookintelcontroller (0.10.2) noble; urgency=medium
 
   * Refactored, no new features

@@ -165,11 +165,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
     def on_btnAceptar_clicked(self, widget):
         # Check secureboot
-        exit_code, msg = subprocess.getstatusoutput(
-            'mokutil --sb-state | grep -i "SecureBoot disabled"'
-        )
-
-        if exit_code:
+        if (utils.get_secureboot_status()):
             self.dialog(
                 _("Secureboot Warning"),
                 _(
@@ -637,7 +633,7 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
 
         if self.exec_indicator:
             logger.info("Starting indicator...")
-            os.system("python3 " + CURRENT_PATH + "/slimbookintelcontrollerindicator.py")
+            subprocess.Popen(["/usr/bin/python3",CURRENT_PATH + "/slimbookintelcontrollerindicator.py"])
 
     def about_us(self, widget, x):
         logger.debug("About us ...")
