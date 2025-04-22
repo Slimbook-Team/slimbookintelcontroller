@@ -276,12 +276,14 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
         logger.info("Indicator now: {}".format(self.indicador_actual))
 
     def init_gui(self):  # ---> UNFINISHED
-    
+
         if not Path(utils.CONFIG_FILE).exists():
             os.makedirs(os.path.expanduser("~/.config/slimbookintelcontroller"),exist_ok = True)
             self.update_config_file("autostart","off")
             self.update_config_file("show-icon","off")
             self.update_config_file("mode","medium")
+
+            self.populate_procs()
 
         config.read(utils.CONFIG_FILE)
 
@@ -661,6 +663,27 @@ class SlimbookINTEL(Gtk.ApplicationWindow):
             config.write(configfile)
         print("Variable |'{}' updated, actual value: {}\n".format(variable, value))
 
+    def populate_procs(self):
+        if not config.has_section("PROCESSORS"):
+            config.add_section("PROCESSORS") 
+
+        print("Populating processors in config file")
+
+        with open(utils.CPU_DB_FILE, "r") as dbfile:
+            for i in range(3):
+                next(dbfile)
+
+            for line in dbfile:
+                if str(line) != "\n":
+                    split = line.split("=")
+
+                    cpu = split[0]
+                    tdp = split[1]
+                    config.set("PROCESSORS", cpu, tdp)
+
+        with open(utils.CONFIG_FILE, "w") as configfile:
+            config.write(configfile)
+
     def exit(self):
         Gtk.main_quit()
         sys.exit(0)
@@ -688,3 +711,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
