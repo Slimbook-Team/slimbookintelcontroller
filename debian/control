@@ -1,0 +1,15 @@
+Source: slimbookintelcontroller
+Section: utils
+Priority: extra
+Maintainer: slimbook <dev@slimbook.es>
+Build-Depends: debhelper-compat (= 13), dh-python
+Standards-Version: 4.6.0
+Homepage: https://github.com/Slimbook-Team/slimbookintelcontroller
+Rules-Requires-Root: no
+ 
+Package: slimbookintelcontroller
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends},python3, python3-gi, python3-matplotlib,
+ libnotify-bin, gir1.2-ayatanaappindicator3-0.1, intel-undervolt
+Description: Application for managing the performance of Intel processors
+ Application for managing the performance of Intel processors
